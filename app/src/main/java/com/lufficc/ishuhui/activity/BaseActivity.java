@@ -24,7 +24,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     private Unbinder unbind;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         initStatusBarColor();
@@ -53,7 +52,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     public abstract int getLayoutId();
 
     /**
-     *
      */
     private Toast toast;
 
