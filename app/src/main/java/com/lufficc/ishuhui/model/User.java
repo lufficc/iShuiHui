@@ -18,7 +18,7 @@ public class User {
     private static final String USER_KEY_EMAIL = "USER_KEY_EMAIL";
     private static final String USER_KEY_NICKNAME = "USER_KEY_NICKNAME";
     private static User instance;
-    private String Set_Cookie;
+    private String Set_Cookie = null;
 
     public String getId() {
         return id;
@@ -108,6 +108,8 @@ public class User {
     public void logout()
     {
         instance = null;
+        this.Set_Cookie = null;
+        this.email = null;
         PtrUtil.getInstance()
                 .start()
                 .remove(COOKIE_KEY)

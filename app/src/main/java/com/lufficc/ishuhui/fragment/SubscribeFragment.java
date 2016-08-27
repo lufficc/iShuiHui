@@ -134,6 +134,7 @@ public class SubscribeFragment extends BaseFragment implements IView<ComicModel>
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        subscribeFragmentPresenter.onDestroy();
     }
 
     @Override

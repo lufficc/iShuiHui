@@ -3,9 +3,10 @@ package com.lufficc.ishuhui.fragment.presenter;
 import android.support.annotation.NonNull;
 
 import com.lufficc.ishuhui.fragment.IView.IView;
-import com.lufficc.ishuhui.model.ComicModel;
 import com.lufficc.ishuhui.manager.RetrofitManager;
+import com.lufficc.ishuhui.model.ComicModel;
 
+import retrofit2.Call;
 import retrofit2.Callback;
 
 /**
@@ -13,15 +14,14 @@ import retrofit2.Callback;
  */
 public class SubscribeFragmentPresenter {
     private IView<ComicModel> iView;
-
+    private Call<ComicModel> call;
     public SubscribeFragmentPresenter(@NonNull IView<ComicModel> iView) {
         this.iView = iView;
     }
 
     public void getSubscribedComics() {
-        RetrofitManager.api()
-                .getSubscribedComics()
-                .enqueue(new Callback<ComicModel>() {
+        call = RetrofitManager.api().getSubscribedComics();
+        call.enqueue(new Callback<ComicModel>() {
                     @Override
                     public void onResponse(retrofit2.Call<ComicModel> call, retrofit2.Response<ComicModel> response) {
                         if (response.isSuccessful()) {
@@ -36,5 +36,11 @@ public class SubscribeFragmentPresenter {
                         iView.onFailure(call, t);
                     }
                 });
+    }
+    public void onDestroy() {
+        iView = null;
+        if (call != null && !call.isCanceled()) {
+            call.cancel();
+        }
     }
 }

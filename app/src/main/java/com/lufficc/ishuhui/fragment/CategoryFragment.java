@@ -85,7 +85,6 @@ public class CategoryFragment extends BaseFragment implements IView<ComicModel>,
                 getData();
             }
         });
-
         stateLayout.setInfoContentViewMargin(0,-256,0,0);
         presenter = new CategoryFragmentPresenter(this);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
@@ -100,6 +99,12 @@ public class CategoryFragment extends BaseFragment implements IView<ComicModel>,
         if (adapter.isDataEmpty())
             stateLayout.showProgressView();
         presenter.getData(classifyId, PageIndex);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        presenter.onDestroy();
     }
 
     @Override

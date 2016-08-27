@@ -105,6 +105,7 @@ public class MainActivity extends BaseActivity implements
             logoutBtn.setVisibility(View.GONE);
             onLogin(User.getInstance());
         } else {
+            logoutBtn.setVisibility(View.VISIBLE);
             email.setText("点击登陆");
         }
 

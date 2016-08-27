@@ -78,6 +78,7 @@
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
                 android:id="@+id/logoutBtn"
+                android:visibility="gone"
                 android:text="@string/logout" />
         </LinearLayout>
     </android.support.design.widget.NavigationView>

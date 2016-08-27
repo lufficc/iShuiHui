@@ -26,11 +26,11 @@ import com.lufficc.ishuhui.adapter.ChapterListAdapter;
 import com.lufficc.ishuhui.adapter.LoadMoreAdapter;
 import com.lufficc.ishuhui.constants.API;
 import com.lufficc.ishuhui.manager.ChapterListManager;
+import com.lufficc.ishuhui.manager.RetrofitManager;
 import com.lufficc.ishuhui.model.Chapter;
 import com.lufficc.ishuhui.model.ChapterListModel;
 import com.lufficc.ishuhui.model.Comic;
 import com.lufficc.ishuhui.model.User;
-import com.lufficc.ishuhui.manager.RetrofitManager;
 import com.lufficc.ishuhui.utils.JsonUtil;
 import com.lufficc.ishuhui.utils.PtrUtil;
 import com.lufficc.ishuhui.widget.DefaultItemDecoration;
@@ -39,6 +39,7 @@ import com.lufficc.stateLayout.StateLayout;
 import java.util.List;
 
 import butterknife.BindView;
+import retrofit2.Call;
 import retrofit2.Callback;
 
 
@@ -208,51 +209,59 @@ public class ChapterListActivity extends BaseActivity implements View.OnClickLis
         return true;
     }
 
+    private Call<ChapterListModel> call;
+
     private void getData() {
         if (currentAdapter.isDataEmpty())
             stateLayout.showProgressView();
-        RetrofitManager.api()
-                .getComicChapters(String.valueOf(bookId), PageIndex)
-                .enqueue(new Callback<ChapterListModel>() {
-                    @Override
-                    public void onResponse(retrofit2.Call<ChapterListModel> call, retrofit2.Response<ChapterListModel> response) {
-                        if (response.isSuccessful()) {
-                            ChapterListModel result = response.body();
-                            if (result.Return.List.isEmpty()) {
-                                currentAdapter.noMoreData();
-                            } else {
-                                if (PageIndex == 0) {
-                                    Glide.with(ChapterListActivity.this)
-                                            .load(result.Return.ParentItem.FrontCover)
-                                            .centerCrop().
-                                            into(header_image);
-                                    currentAdapter.setData(result.Return.List);
-                                } else {
-                                    currentAdapter.addData(result.Return.List);
-                                }
-                            }
-                            swipeRefreshLayout.setRefreshing(false);
-                            if (currentAdapter.isDataEmpty()) {
-                                stateLayout.showEmptyView();
-                            } else {
-                                stateLayout.showContentView();
-                            }
+        call = RetrofitManager.api().getComicChapters(String.valueOf(bookId), PageIndex);
+        call.enqueue(new Callback<ChapterListModel>() {
+            @Override
+            public void onResponse(retrofit2.Call<ChapterListModel> call, retrofit2.Response<ChapterListModel> response) {
+                if (response.isSuccessful()) {
+                    ChapterListModel result = response.body();
+                    if (result.Return.List.isEmpty()) {
+                        currentAdapter.noMoreData();
+                    } else {
+                        if (PageIndex == 0) {
+                            Glide.with(ChapterListActivity.this)
+                                    .load(result.Return.ParentItem.FrontCover)
+                                    .centerCrop().
+                                    into(header_image);
+                            currentAdapter.setData(result.Return.List);
                         } else {
-                            swipeRefreshLayout.setRefreshing(false);
-                            if (currentAdapter.isDataEmpty()) {
-                                stateLayout.showErrorView(response.message());
-                            }
+                            currentAdapter.addData(result.Return.List);
                         }
                     }
+                    swipeRefreshLayout.setRefreshing(false);
+                    if (currentAdapter.isDataEmpty()) {
+                        stateLayout.showEmptyView();
+                    } else {
+                        stateLayout.showContentView();
+                    }
+                } else {
+                    swipeRefreshLayout.setRefreshing(false);
+                    if (currentAdapter.isDataEmpty()) {
+                        stateLayout.showErrorView(response.message());
+                    }
+                }
+            }
 
-                    @Override
-                    public void onFailure(retrofit2.Call<ChapterListModel> call, Throwable t) {
-                        swipeRefreshLayout.setRefreshing(false);
-                        if (currentAdapter.isDataEmpty()) {
-                            stateLayout.showErrorView(t.getMessage());
-                        }
-                    }
-                });
+            @Override
+            public void onFailure(retrofit2.Call<ChapterListModel> call, Throwable t) {
+                swipeRefreshLayout.setRefreshing(false);
+                if (currentAdapter.isDataEmpty()) {
+                    stateLayout.showErrorView(t.getMessage());
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(call != null && !call.isCanceled())
+            call.cancel();
     }
 
     @Override
