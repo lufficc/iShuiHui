@@ -1,0 +1,10 @@
+*.iml
+.gradle
+/local.properties
+.DS_Store
+/build
+/captures
+/.idea/
+/app/src/main/java/com/lufficc/ishuhui/Config.java
+/app/src/main/java/com/lufficc/ishuhui/Haha.java
+/gradle/

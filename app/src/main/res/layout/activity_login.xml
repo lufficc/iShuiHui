@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorPrimary"
+    android:fitsSystemWindows="true"
+    tools:context=".activity.LoginActivity">
+
+    <include layout="@layout/app_bar_layout" />
+
+    <shem.com.materiallogin.MaterialLoginView
+        android:padding="5dp"
+        app:registerIcon="@mipmap/ic_register"
+        android:id="@+id/login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:registerActionText="@string/register"
+        app:registerHint="@string/register"
+        app:registerPasswordHint="@string/password"
+        app:registerRepeatPasswordHint="@string/comfirm_password"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:loginActionText="@string/login"
+        app:loginTextColor="@color/colorPrimaryDark"
+        app:loginHint="@string/email"
+        app:registerTextColor="@color/colorPrimary"
+        app:loginPasswordHint="@string/password"
+        app:loginTitle="@string/login" />
+</android.support.design.widget.CoordinatorLayout>

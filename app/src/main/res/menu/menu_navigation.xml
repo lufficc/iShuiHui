@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group
+        android:id="@+id/group1"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/action_subscribe"
+            android:icon="@mipmap/ic_heart"
+            android:title="@string/subscribe" />
+
+        <item
+            android:id="@+id/action_hot"
+            android:icon="@mipmap/ic_hot"
+            android:title="@string/hot" />
+
+        <item
+            android:id="@+id/action_shuhui"
+            android:icon="@mipmap/ic_mouse"
+            android:title="@string/shuhui" />
+
+        <item
+            android:id="@+id/action_same"
+            android:icon="@mipmap/ic_same"
+            android:title="@string/same_people" />
+    </group>
+
+</menu>

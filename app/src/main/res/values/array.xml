@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="ss">
+        <item>订阅</item>
+        <item>热门</item>
+        <item>同人</item>
+        <item>鼠绘</item>
+    </string-array>
+</resources>

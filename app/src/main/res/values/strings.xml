@@ -1,0 +1,50 @@
+<resources>
+    <string name="app_name">鼠绘漫画</string>
+    <string name="action_settings">设置</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">邮箱</string>
+    <string name="prompt_password">密码</string>
+    <string name="action_sign_in">登录</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">无效的邮箱</string>
+    <string name="error_invalid_password">密码太短</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">此字段是必须的</string>
+    <string name="error_password">密码不一致</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="copy">复制</string>
+    <string name="share_link">分享链接</string>
+    <string name="exit">退出</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="subscribe">订阅</string>
+    <string name="open_bower">用浏览器打开</string>
+    <string name="refresh">刷新</string>
+    <string name="picture">图片</string>
+    <string name="simple_mode">简约模式</string>
+    <string name="next_chapter">下一章</string>
+    <string name="login">登录</string>
+    <string name="email">邮箱</string>
+    <string name="password">密码</string>
+    <string name="register">注册</string>
+    <string name="comfirm_password">确认密码</string>
+    <string name="search">搜索</string>
+    <string name="scale_behavior">com.lufficc.ishuhui.widget.ScaleBehavior</string>
+    <string name="about">关于</string>
+    <string name="view">查看</string>
+    <string name="hot">热血</string>
+    <string name="shuhui">鼠绘</string>
+    <string name="same_people">同人</string>
+    <string name="logout">登出</string>
+    <string name="settings">设置</string>
+    <string name="info">这是一个练手的小项目，但力求每个细节做到完美，希望能给你带来帮助。本软件开源在Github，数据来源为鼠绘，欢迎Star,Issues。</string>
+    <string name="github">Github</string>
+    <string name="lufficc_com">lufficc.com</string>
+    <string name="welcome">Enjoy your reading from here.</string>
+
+</resources>
