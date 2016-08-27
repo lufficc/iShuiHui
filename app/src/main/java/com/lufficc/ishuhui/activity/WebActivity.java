@@ -35,7 +35,6 @@ import com.lufficc.stateLayout.StateLayout;
 import butterknife.BindView;
 
 public class WebActivity extends BaseActivity {
-
     public static final String URL = "URL";
     public static final String TITLE = "TITLE";
     public static final String CHAPTER_NUM = "CHAPTER_NUM";
@@ -67,7 +66,7 @@ public class WebActivity extends BaseActivity {
                 webView.reload();
             }
         });
-        stateLayout.setInfoContentViewMargin(0,-256,0,0);
+        stateLayout.setInfoContentViewMargin(0, -256, 0, 0);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setAppCacheEnabled(true);
@@ -77,7 +76,7 @@ public class WebActivity extends BaseActivity {
         webSettings.setDomStorageEnabled(true);
         webView.setWebChromeClient(new ChromeClient());
         webView.setWebViewClient(new ViewClient());
-        webView.addJavascriptInterface(new AndroidInterface(),"android");
+        webView.addJavascriptInterface(new AndroidInterface(), "android");
         webView.clearHistory();
         webView.loadUrl(mUrl);
     }
@@ -217,10 +216,8 @@ public class WebActivity extends BaseActivity {
         }
     }
 
-    private class AndroidInterface
-    {
-        public void onImageClick(String src)
-        {
+    private class AndroidInterface {
+        public void onImageClick(String src) {
             toast(src);
         }
     }
@@ -265,7 +262,8 @@ public class WebActivity extends BaseActivity {
         }
 
         private void errorHappen() {
-            stateLayout.showErrorView();
+            if (stateLayout != null)
+                stateLayout.showErrorView();
         }
     }
 }
