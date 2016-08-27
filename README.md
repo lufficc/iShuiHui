@@ -5,6 +5,8 @@
 另外，本项目用到了自己的另一个多管理状态的layout,欢迎参考源码[lufficc/StateLayout](https://github.com/lufficc/StateLayout)
 
 
+下载apk体验:[Click me](http://fir.im/ishuhui)
+
 #### 依赖（不包括Google Support）
 
 1.    [glide](https://github.com/bumptech/glide)
