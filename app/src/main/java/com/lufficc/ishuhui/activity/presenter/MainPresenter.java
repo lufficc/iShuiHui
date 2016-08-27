@@ -58,7 +58,7 @@ public class MainPresenter {
                     try {
                         pi = pm.getPackageInfo(context.getPackageName(), 0);
                         FirLatestModel firLatestModel = response.body();
-                        if (pi.versionCode == firLatestModel.build) {
+                        if (pi.versionCode < firLatestModel.build) {
                             mainView.onUpdate(firLatestModel);
                         }
                     } catch (PackageManager.NameNotFoundException e) {
