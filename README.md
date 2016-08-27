@@ -6,4 +6,4 @@
 
 ### 截图：
 
-![sample](screenshots/device-2016-08-27-230634.gif) ![sample](screenshots/device-2016-08-27-233253.gif)![sample](screenshots/device-2016-08-27-233759.gif)![sample](screenshots/device-2016-08-27-234239.gif)![sample](screenshots/device-2016-08-27-234409.png)
+![sample](screenshots/device-2016-08-27-230634.gif) ![sample](screenshots/device-2016-08-27-233253.gif)![sample](screenshots/device-2016-08-27-233759.gif)![sample](screenshots/device-2016-08-27-234239.gif)![sample](screenshots/device-2016-08-27-234499.png)
