@@ -1,13 +1,13 @@
 # 鼠绘漫画非官方客户端
 
-### 一个非官方的鼠绘漫画，是一个练手的小项目，但力求涵盖android开发的各个方面，包括Retrofit请求数据，谷歌Gson,Okhttp自定义Interceptor,错误处理，视图的状态切换，Fragment平缓切换及缓存，不依赖第三方实现简单的加载更多，webview实现NestedScroll，简单的mvp模式，集成友盟统计和Fir.im版本更新等等，总之是一个适合新手参考的案例。
+#### 一个非官方的鼠绘漫画，是一个练手的小项目，但涵盖android开发的各个方面，包括Retrofit请求数据，谷歌Gson,Okhttp自定义Interceptor,错误处理，视图的状态切换，Fragment平缓切换及缓存，不依赖第三方实现简单的加载更多，webview实现NestedScroll，简单的mvp模式，集成友盟统计和Fir.im版本更新等等，总之是一个适合新手参考的案例。
 
-### 另外，本项目用到了自己的另一个多管理状态的layout,欢迎参考源码[lufficc/StateLayout](https://github.com/lufficc/StateLayout)
+#### 另外，本项目用到了自己的另一个多管理状态的layout,欢迎参考源码[lufficc/StateLayout](https://github.com/lufficc/StateLayout)
 
 
-### 依赖（不包括Google Support）
-```
-    compile 'com.github.bumptech.glide:glide:3.7.0'
+#### 依赖（不包括Google Support）
+
+1.    [glide](https://github.com/bumptech/glide)
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
@@ -23,9 +23,7 @@
     compile 'com.umeng.analytics:analytics:latest.integration'
 
     compile 'com.lufficc:stateLayout:0.0.5'
-```
 
-1. [MiguelCatalan/MaterialSearchView](https://github.com/MiguelCatalan/MaterialSearchView)
 
 ### 截图：
 
@@ -36,7 +34,7 @@
 ![sample](screenshots/device-2016-08-27-234499.png)
 
 
-## if you find a bug or have good suggestion ,find me here [https://lufficc.com](https://lufficc.com)
+## 有好的意见或者建议欢迎Issues,我的网站 [https://lufficc.com](https://lufficc.com)
 
 # License
 	Copyright 2015 Miguel Catalan Bañuls
