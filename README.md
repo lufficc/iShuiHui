@@ -29,10 +29,10 @@
 ![sample](screenshots/device-2016-08-27-234499.png)
 
 
-## 有好的意见或者建议欢迎Issues,我的网站 [https://lufficc.com](https://lufficc.com)
+### 有好的意见或者建议欢迎Issues,我的网站 [https://lufficc.com](https://lufficc.com)
 
 # License
-	Copyright 2015 Miguel Catalan Bañuls
+	Copyright 2016 lufficc
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
