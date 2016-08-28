@@ -11,11 +11,11 @@ import com.bumptech.glide.Glide;
 import com.lufficc.ishuhui.R;
 import com.lufficc.ishuhui.activity.ChapterListActivity;
 import com.lufficc.ishuhui.model.Comic;
-import com.lufficc.ishuhui.utils.PtrUtil;
 import com.lufficc.ishuhui.widget.TagImageView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * Created by lcc_luffy on 2016/1/23.
@@ -67,10 +67,10 @@ public class ComicAdapter extends LoadMoreAdapter<Comic> {
 
         @BindView(R.id.title_LastChapter)
         TextView title_LastChapter;
-
+        Unbinder unbinder;
         public ViewHolder(View view) {
             super(view);
-            ButterKnife.bind(this, view);
+            unbinder = ButterKnife.bind(this, view);
         }
 
         void onBindData(Comic data) {
@@ -98,11 +98,10 @@ public class ComicAdapter extends LoadMoreAdapter<Comic> {
             } catch (Exception e) {
                 tagImageView.setTagEnable(false);
             }
-
-            boolean isSubscribed = PtrUtil.getInstance().getBoolean("bookId" + data.Id + "isSubscribed", false);
-            if (!isSubscribed) {
-                PtrUtil.getInstance().start().put("bookId" + data.Id + "isSubscribed", true).commit();
-            }
         }
+    }
+    @Override
+    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+        ((ViewHolder)holder).unbinder.unbind();
     }
 }

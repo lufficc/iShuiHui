@@ -19,14 +19,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.gson.JsonObject;
 import com.lufficc.ishuhui.R;
+import com.lufficc.ishuhui.activity.iview.ChapterListView;
+import com.lufficc.ishuhui.activity.iview.SubscribeView;
+import com.lufficc.ishuhui.activity.presenter.ChapterListPresenter;
+import com.lufficc.ishuhui.activity.presenter.SubscribePresenter;
 import com.lufficc.ishuhui.adapter.ChapterAdapter;
 import com.lufficc.ishuhui.adapter.ChapterListAdapter;
 import com.lufficc.ishuhui.adapter.LoadMoreAdapter;
 import com.lufficc.ishuhui.constants.API;
 import com.lufficc.ishuhui.manager.ChapterListManager;
-import com.lufficc.ishuhui.manager.RetrofitManager;
 import com.lufficc.ishuhui.model.Chapter;
 import com.lufficc.ishuhui.model.ChapterListModel;
 import com.lufficc.ishuhui.model.Comic;
@@ -39,11 +41,13 @@ import com.lufficc.stateLayout.StateLayout;
 import java.util.List;
 
 import butterknife.BindView;
-import retrofit2.Call;
-import retrofit2.Callback;
 
 
-public class ChapterListActivity extends BaseActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class ChapterListActivity extends BaseActivity implements
+        View.OnClickListener,
+        SwipeRefreshLayout.OnRefreshListener,
+        ChapterListView,
+        SubscribeView {
     public static final String COMIC = "COMIC";
 
     public static final String KEY_LAST_SEE = "KEY_LAST_SEE";
@@ -68,6 +72,9 @@ public class ChapterListActivity extends BaseActivity implements View.OnClickLis
     ChapterAdapter chapterAdapter;
 
     ChapterListAdapter chapterListAdapter;
+
+    ChapterListPresenter chapterListPresenter;
+    SubscribePresenter subscribePresenter;
 
     private Comic comic;
     private int PageIndex = 0;
@@ -163,6 +170,8 @@ public class ChapterListActivity extends BaseActivity implements View.OnClickLis
 
     private void init() {
         setTitle(title);
+        chapterListPresenter = new ChapterListPresenter(this);
+        subscribePresenter = new SubscribePresenter(this);
         recyclerView.addItemDecoration(new DefaultItemDecoration(
                 ContextCompat.getColor(this, R.color.white),
                 ContextCompat.getColor(this, R.color.divider),
@@ -209,59 +218,26 @@ public class ChapterListActivity extends BaseActivity implements View.OnClickLis
         return true;
     }
 
-    private Call<ChapterListModel> call;
+    private void subscribe() {
+        if (!User.getInstance().isLogin()) {
+            LoginActivity.login(this);
+            toast("登陆后才能订阅吆");
+            return;
+        }
+        subscribePresenter.subscribe(bookId, isSubscribed);
+    }
 
     private void getData() {
         if (currentAdapter.isDataEmpty())
             stateLayout.showProgressView();
-        call = RetrofitManager.api().getComicChapters(String.valueOf(bookId), PageIndex);
-        call.enqueue(new Callback<ChapterListModel>() {
-            @Override
-            public void onResponse(retrofit2.Call<ChapterListModel> call, retrofit2.Response<ChapterListModel> response) {
-                if (response.isSuccessful()) {
-                    ChapterListModel result = response.body();
-                    if (result.Return.List.isEmpty()) {
-                        currentAdapter.noMoreData();
-                    } else {
-                        if (PageIndex == 0) {
-                            Glide.with(ChapterListActivity.this)
-                                    .load(result.Return.ParentItem.FrontCover)
-                                    .centerCrop().
-                                    into(header_image);
-                            currentAdapter.setData(result.Return.List);
-                        } else {
-                            currentAdapter.addData(result.Return.List);
-                        }
-                    }
-                    swipeRefreshLayout.setRefreshing(false);
-                    if (currentAdapter.isDataEmpty()) {
-                        stateLayout.showEmptyView();
-                    } else {
-                        stateLayout.showContentView();
-                    }
-                } else {
-                    swipeRefreshLayout.setRefreshing(false);
-                    if (currentAdapter.isDataEmpty()) {
-                        stateLayout.showErrorView(response.message());
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(retrofit2.Call<ChapterListModel> call, Throwable t) {
-                swipeRefreshLayout.setRefreshing(false);
-                if (currentAdapter.isDataEmpty()) {
-                    stateLayout.showErrorView(t.getMessage());
-                }
-            }
-        });
+        chapterListPresenter.getData(bookId, PageIndex);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(call != null && !call.isCanceled())
-            call.cancel();
+        chapterListPresenter.onDestroy();
+        subscribePresenter.onDestroy();
     }
 
     @Override
@@ -320,45 +296,6 @@ public class ChapterListActivity extends BaseActivity implements View.OnClickLis
 
     boolean simple_mode = false;
 
-    private void subscribe() {
-        if (!User.getInstance().isLogin()) {
-            LoginActivity.login(this);
-            toast("登陆后才能订阅吆");
-            return;
-        }
-        RetrofitManager.api()
-                .subscribe(String.valueOf(bookId), String.valueOf(!isSubscribed), 2)
-                .enqueue(new Callback<JsonObject>() {
-                    @Override
-                    public void onResponse(retrofit2.Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
-                        if (response.isSuccessful()) {
-                            toast(response.body().toString());
-                            if (!isSubscribed) {
-                                toast("订阅成功");
-                            } else {
-                                toast("已取消订阅");
-                            }
-                            ChapterListActivity.this.isSubscribed = !ChapterListActivity.this.isSubscribed;
-                            if (isSubscribed) {
-                                fab_subscribe.setImageResource(R.mipmap.ic_done);
-                            } else {
-                                fab_subscribe.setImageResource(R.mipmap.ic_add);
-                            }
-                            PtrUtil.getInstance()
-                                    .start()
-                                    .put("bookId" + bookId + "isSubscribed", isSubscribed)
-                                    .commit();
-                        } else {
-                            toast("操作失败");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(retrofit2.Call<JsonObject> call, Throwable t) {
-                        toast(t.getMessage());
-                    }
-                });
-    }
 
     @Override
     public int getLayoutId() {
@@ -379,5 +316,56 @@ public class ChapterListActivity extends BaseActivity implements View.OnClickLis
         currentAdapter.canLoadMore();
         PageIndex = 0;
         getData();
+    }
+
+    @Override
+    public void onSuccess(ChapterListModel model) {
+        if (model.Return.List.isEmpty()) {
+            currentAdapter.noMoreData();
+        } else {
+            if (PageIndex == 0) {
+                Glide.with(ChapterListActivity.this)
+                        .load(model.Return.ParentItem.FrontCover)
+                        .centerCrop().
+                        into(header_image);
+                currentAdapter.setData(model.Return.List);
+            } else {
+                currentAdapter.addData(model.Return.List);
+            }
+        }
+        swipeRefreshLayout.setRefreshing(false);
+        if (currentAdapter.isDataEmpty()) {
+            stateLayout.showEmptyView();
+        } else {
+            stateLayout.showContentView();
+        }
+    }
+
+    @Override
+    public void onFail(Throwable t) {
+        swipeRefreshLayout.setRefreshing(false);
+        if (currentAdapter.isDataEmpty()) {
+            stateLayout.showErrorView(t.getMessage());
+        }
+    }
+
+    @Override
+    public void onSubscribe(boolean isSubscribed) {
+        if (!isSubscribed) {
+            toast("订阅成功");
+        } else {
+            toast("已取消订阅");
+        }
+        ChapterListActivity.this.isSubscribed = !ChapterListActivity.this.isSubscribed;
+        if (isSubscribed) {
+            fab_subscribe.setImageResource(R.mipmap.ic_done);
+        } else {
+            fab_subscribe.setImageResource(R.mipmap.ic_add);
+        }
+    }
+
+    @Override
+    public void onFailSubscribe(String msg) {
+        toast(msg);
     }
 }

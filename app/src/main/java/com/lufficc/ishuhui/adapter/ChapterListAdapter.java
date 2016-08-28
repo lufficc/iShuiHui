@@ -18,6 +18,7 @@ import com.lufficc.ishuhui.utils.PtrUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * Created by lcc_luffy on 2016/1/23.
@@ -70,13 +71,13 @@ public class ChapterListAdapter extends LoadMoreAdapter<Chapter> {
 
         @BindView(R.id.tv_comic_status)
         TextView tv_comic_status;
-
+        Unbinder unbinder;
         public ViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            unbinder = ButterKnife.bind(this, itemView);
         }
 
-        public void onBindData(Chapter data) {
+        void onBindData(Chapter data) {
             tv_comic_title.setText(data.Title);
             tv_comic_intro.setText(data.RefreshTimeStr);
             tv_comic_status.setText(data.Sort + "话");
@@ -86,5 +87,9 @@ public class ChapterListAdapter extends LoadMoreAdapter<Chapter> {
                     .placeholder(R.color.gray)
                     .into(iv_zone_item);
         }
+    }
+    @Override
+    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+        ((ViewHolder)holder).unbinder.unbind();
     }
 }

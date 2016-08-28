@@ -19,6 +19,7 @@ import com.lufficc.ishuhui.utils.PtrUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * Created by lcc_luffy on 2016/1/23.
@@ -78,10 +79,12 @@ public class ChapterAdapter extends LoadMoreAdapter<Chapter> {
         @BindView(R.id.chapter_view)
         Button chapter_view;
 
+        Unbinder unbinder;
         public ViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            unbinder = ButterKnife.bind(this, itemView);
         }
+
 
         void onBindData(Chapter data) {
             chapter_name.setText(data.Title);
@@ -99,5 +102,10 @@ public class ChapterAdapter extends LoadMoreAdapter<Chapter> {
                 }
             });
         }
+    }
+
+    @Override
+    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+        ((ViewHolder)holder).unbinder.unbind();
     }
 }
