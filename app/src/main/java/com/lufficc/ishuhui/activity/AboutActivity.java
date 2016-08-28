@@ -57,7 +57,7 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
                 openUrl("https://lufficc.com/");
                 break;
             case R.id.github:
-                openUrl("https://github.com/lufficc/IShuHui");
+                openUrl("https://github.com/lufficc/iShuiHui");
                 break;
         }
     }
