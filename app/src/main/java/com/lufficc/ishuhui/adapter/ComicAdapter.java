@@ -15,7 +15,6 @@ import com.lufficc.ishuhui.widget.TagImageView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 /**
  * Created by lcc_luffy on 2016/1/23.
@@ -67,10 +66,9 @@ public class ComicAdapter extends LoadMoreAdapter<Comic> {
 
         @BindView(R.id.title_LastChapter)
         TextView title_LastChapter;
-        Unbinder unbinder;
         public ViewHolder(View view) {
             super(view);
-            unbinder = ButterKnife.bind(this, view);
+            ButterKnife.bind(this, view);
         }
 
         void onBindData(Comic data) {
@@ -99,9 +97,5 @@ public class ComicAdapter extends LoadMoreAdapter<Comic> {
                 tagImageView.setTagEnable(false);
             }
         }
-    }
-    @Override
-    public void onViewRecycled(RecyclerView.ViewHolder holder) {
-        ((ViewHolder)holder).unbinder.unbind();
     }
 }

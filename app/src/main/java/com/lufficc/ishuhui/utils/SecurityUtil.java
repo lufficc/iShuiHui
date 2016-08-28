@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class SecurityUtil {
     public static String createMd5(String... strParams) {
-        StringBuffer strBuffer = new StringBuffer();
+        StringBuilder strBuffer = new StringBuilder();
 
         for (String strParam : strParams) {
             strBuffer.append(strParam);
@@ -26,7 +26,7 @@ public class SecurityUtil {
 
             int i;
 
-            StringBuffer buf = new StringBuffer("");
+            StringBuilder buf = new StringBuilder("");
             for (byte aB : b) {
                 i = aB;
                 if (i < 0)

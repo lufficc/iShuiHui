@@ -71,10 +71,9 @@ public class ChapterListAdapter extends LoadMoreAdapter<Chapter> {
 
         @BindView(R.id.tv_comic_status)
         TextView tv_comic_status;
-        Unbinder unbinder;
         public ViewHolder(View itemView) {
             super(itemView);
-            unbinder = ButterKnife.bind(this, itemView);
+            ButterKnife.bind(this, itemView);
         }
 
         void onBindData(Chapter data) {
@@ -87,9 +86,5 @@ public class ChapterListAdapter extends LoadMoreAdapter<Chapter> {
                     .placeholder(R.color.gray)
                     .into(iv_zone_item);
         }
-    }
-    @Override
-    public void onViewRecycled(RecyclerView.ViewHolder holder) {
-        ((ViewHolder)holder).unbinder.unbind();
     }
 }
