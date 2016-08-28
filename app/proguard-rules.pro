@@ -35,7 +35,6 @@ public static final int *;
   **[] $VALUES;
   public *;
 }
--keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 
 ## retrofit
 
@@ -50,3 +49,25 @@ public static final int *;
 # Retain declared checked exceptions for use by a Proxy instance.
 -keepattributes Exceptions
 
+-dontwarn okio.**
+
+
+# event bus
+-keepattributes *Annotation*
+-keepclassmembers class ** {
+    @org.greenrobot.eventbus.Subscribe <methods>;
+}
+-keep enum org.greenrobot.eventbus.ThreadMode { *; }
+
+# Only required if you use AsyncExecutor
+-keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
+    <init>(java.lang.Throwable);
+}
+
+-keep class com.lufficc.ishuhui.model.** { *; }
+
+-keep class shem.com.materiallogin.** { *; }
+-keepattributes *Annotation*
+-keep class sun.misc.Unsafe { *; }
+-keep class com.idea.fifaalarmclock.entity.***
+-keep class com.google.gson.stream.** { *; }

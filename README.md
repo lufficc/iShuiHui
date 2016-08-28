@@ -28,8 +28,9 @@
 
 ![sample](screenshots/device-2016-08-27-234239.gif)
 
-![sample](screenshots/device-2016-08-27-234499.png)
+![sample](screenshots/device-2016-08-28-213915.png)
 
+![sample](screenshots/Screenshot_2016-08-28-00-56-46-293_com.lufficc.is.png)
 
 ### 有好的意见或者建议欢迎Issues,我的网站 [https://lufficc.com](https://lufficc.com)
 
