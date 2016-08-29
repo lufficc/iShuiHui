@@ -45,7 +45,7 @@ public class ChapterAdapter extends LoadMoreAdapter<Chapter> {
 
     @Override
     public void onBindHolder(RecyclerView.ViewHolder holder, final int position) {
-        ((ViewHolder) holder).onBindData(data.get(position));
+        ((ViewHolder) holder).onBindData(data.get(position),position);
         if (onItemClickListener != null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -84,7 +84,7 @@ public class ChapterAdapter extends LoadMoreAdapter<Chapter> {
         }
 
 
-        void onBindData(Chapter data) {
+        void onBindData(Chapter data, final int position) {
             chapter_name.setText(data.Title);
             chapter_number.setText(data.Sort + "话");
             chapter_date.setText(data.RefreshTimeStr);
@@ -96,7 +96,7 @@ public class ChapterAdapter extends LoadMoreAdapter<Chapter> {
             chapter_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onItemClickListener.onItemClick(getAdapterPosition());
+                    onItemClickListener.onItemClick(position);
                 }
             });
         }
