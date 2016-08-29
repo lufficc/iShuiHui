@@ -50,6 +50,10 @@ public abstract class SimpleAdapter<Holder extends RecyclerView.ViewHolder, T> e
         notifyDataSetChanged();
     }
 
+    @Override
+    public void onBindViewHolder(Holder holder, int position, List<Object> payloads) {
+        super.onBindViewHolder(holder, position, payloads);
+    }
 
     public List<T> getData() {
         return data;

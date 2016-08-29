@@ -23,7 +23,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.BindView;
 import retrofit2.Call;
 
-public class SubscribeFragment extends BaseFragment implements IView<ComicModel> {
+public class SubscribeFragment extends BaseFragment implements IView<ComicModel>, SwipeRefreshLayout.OnRefreshListener {
 
     ComicAdapter adapter;
     SubscribeFragmentPresenter subscribeFragmentPresenter;
@@ -64,15 +64,7 @@ public class SubscribeFragment extends BaseFragment implements IView<ComicModel>
         adapter = new ComicAdapter(getContext());
         recyclerView.setAdapter(adapter);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (adapter.isDataEmpty()) {
-                    stateLayout.showProgressView();
-                }
-                getData();
-            }
-        });
+        swipeRefreshLayout.setOnRefreshListener(this);
         adapter.noMoreData();
     }
 
@@ -145,5 +137,13 @@ public class SubscribeFragment extends BaseFragment implements IView<ComicModel>
         } else {
             adapter.noMoreData("加载出错...");
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        if (adapter.isDataEmpty()) {
+            stateLayout.showProgressView();
+        }
+        getData();
     }
 }
