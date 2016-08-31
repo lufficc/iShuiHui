@@ -139,9 +139,6 @@ public class MainPresenter {
             return;
         if (fragment == null) {
             switch (fragmentId) {
-                case FRAGMENT_SUBSCRIBE:
-                    fragment = SubscribeFragment.newInstance();
-                    break;
                 case FRAGMENT_HOT:
                     fragment = CategoryFragment.newInstance(CategoryFragment.CLASSIFY_ID_HOT);
                     break;
@@ -150,6 +147,9 @@ public class MainPresenter {
                     break;
                 case FRAGMENT_SAME:
                     fragment = CategoryFragment.newInstance(CategoryFragment.CLASSIFY_ID_SAME);
+                    break;
+                default:
+                    fragment = SubscribeFragment.newInstance();
                     break;
             }
             fragmentMap.put(fragmentId, fragment);

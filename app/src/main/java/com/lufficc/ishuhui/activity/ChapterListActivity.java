@@ -89,7 +89,6 @@ public class ChapterListActivity extends BaseActivity implements
         comic = (Comic) getIntent().getSerializableExtra(COMIC);
         bookId = comic.Id;
         title = comic.Title;
-
         init();
         PtrUtil.getInstance().start()
                 .put(KEY_LAST_SEE, JsonUtil.toJson(comic))

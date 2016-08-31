@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
+apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 24
@@ -45,6 +46,6 @@ dependencies {
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
     compile 'com.umeng.analytics:analytics:latest.integration'
 
-    compile 'com.lufficc:stateLayout:0.0.5'
+    compile 'com.lufficc:stateLayout:0.0.6'
 
 }

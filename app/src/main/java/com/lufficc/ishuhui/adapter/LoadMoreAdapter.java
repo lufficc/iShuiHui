@@ -14,7 +14,6 @@ import com.lufficc.ishuhui.R;
 import java.util.Collection;
 
 
-
 /**
  * Created by lcc_luffy on 2016/5/22.
  */

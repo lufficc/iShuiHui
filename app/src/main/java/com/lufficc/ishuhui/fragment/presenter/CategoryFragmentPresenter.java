@@ -3,9 +3,12 @@ package com.lufficc.ishuhui.fragment.presenter;
 import android.support.annotation.NonNull;
 
 import com.lufficc.ishuhui.fragment.IView.IView;
+import com.lufficc.ishuhui.manager.RealmManager;
 import com.lufficc.ishuhui.manager.RetrofitManager;
+import com.lufficc.ishuhui.model.Comic;
 import com.lufficc.ishuhui.model.ComicModel;
 
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 
