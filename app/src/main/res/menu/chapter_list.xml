@@ -14,11 +14,6 @@
     <item
         android:id="@+id/action_subscribe"
         android:orderInCategory="100"
-        android:title="@string/subscribe"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_simple_mode"
-        android:orderInCategory="100"
-        android:title="@string/simple_mode"
-        app:showAsAction="never" />
+        android:title="@string/subscribe"/>
+
 </menu>

@@ -12,6 +12,7 @@ import com.lufficc.ishuhui.adapter.ComicAdapter;
 import com.lufficc.ishuhui.model.Comic;
 import com.lufficc.ishuhui.model.ComicModel;
 import com.lufficc.ishuhui.manager.RetrofitManager;
+import com.lufficc.lightadapter.LoadMoreFooterModel;
 import com.lufficc.stateLayout.StateLayout;
 
 import java.util.List;
@@ -29,6 +30,8 @@ public class SearchFragment extends BaseFragment {
     RecyclerView recyclerView;
 
     ComicAdapter adapter;
+
+    LoadMoreFooterModel footerModel;
 
     private String keyword;
 
@@ -58,18 +61,21 @@ public class SearchFragment extends BaseFragment {
         }
         init();
     }
+
     private final View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             getData();
         }
     };
+
     private void init() {
         stateLayout.setErrorAndEmptyAction(onClickListener);
-        stateLayout.setInfoContentViewMargin(0,-256,0,0);
+        stateLayout.setInfoContentViewMargin(0, -256, 0, 0);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         recyclerView.setAdapter(adapter = new ComicAdapter(getContext()));
-        adapter.noMoreData();
+        footerModel = adapter.getLoadMoreFooterModel();
+        footerModel.hideFooter();
         getData();
     }
 

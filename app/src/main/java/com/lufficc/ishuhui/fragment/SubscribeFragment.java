@@ -14,6 +14,7 @@ import com.lufficc.ishuhui.fragment.IView.IView;
 import com.lufficc.ishuhui.fragment.presenter.SubscribeFragmentPresenter;
 import com.lufficc.ishuhui.model.ComicModel;
 import com.lufficc.ishuhui.model.User;
+import com.lufficc.lightadapter.LoadMoreFooterModel;
 import com.lufficc.stateLayout.StateLayout;
 
 import org.greenrobot.eventbus.EventBus;
@@ -26,6 +27,8 @@ import retrofit2.Call;
 public class SubscribeFragment extends BaseFragment implements IView<ComicModel>, SwipeRefreshLayout.OnRefreshListener {
 
     ComicAdapter adapter;
+    LoadMoreFooterModel footerModel;
+
     SubscribeFragmentPresenter subscribeFragmentPresenter;
     @BindView(R.id.stateLayout)
     StateLayout stateLayout;
@@ -58,14 +61,15 @@ public class SubscribeFragment extends BaseFragment implements IView<ComicModel>
                 getData();
             }
         });
-        stateLayout.setInfoContentViewMargin(0,-256,0,0);
+        stateLayout.setInfoContentViewMargin(0, -256, 0, 0);
         subscribeFragmentPresenter = new SubscribeFragmentPresenter(this);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         adapter = new ComicAdapter(getContext());
+        footerModel = adapter.getLoadMoreFooterModel();
+        footerModel.noMoreData();
         recyclerView.setAdapter(adapter);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark);
         swipeRefreshLayout.setOnRefreshListener(this);
-        adapter.noMoreData();
     }
 
 
@@ -118,11 +122,13 @@ public class SubscribeFragment extends BaseFragment implements IView<ComicModel>
     public void onLogin(User user) {
         getData();
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLogout(User.EventLogout eventLogout) {
         adapter.clearData();
         getData();
     }
+
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
@@ -132,10 +138,9 @@ public class SubscribeFragment extends BaseFragment implements IView<ComicModel>
     @Override
     public void onFailure(Call call, Throwable e) {
         if (adapter.isDataEmpty()) {
-            stateLayout.showErrorView();
-            toast(e.getMessage());
+            stateLayout.showErrorView(e.getMessage());
         } else {
-            adapter.noMoreData("加载出错...");
+            footerModel.errorOccur("加载出错," + e.getMessage());
         }
     }
 

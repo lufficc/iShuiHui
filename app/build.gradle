@@ -46,6 +46,7 @@ dependencies {
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
     compile 'com.umeng.analytics:analytics:latest.integration'
 
-    compile 'com.lufficc:stateLayout:0.0.6'
 
+    compile 'com.lufficc:stateLayout:0.0.6'
+    compile 'com.lufficc:lightAdapter:0.0.6'
 }

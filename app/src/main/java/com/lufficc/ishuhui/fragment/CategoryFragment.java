@@ -8,16 +8,16 @@ import android.view.View;
 
 import com.lufficc.ishuhui.R;
 import com.lufficc.ishuhui.adapter.ComicAdapter;
-import com.lufficc.ishuhui.adapter.LoadMoreAdapter;
 import com.lufficc.ishuhui.fragment.IView.IView;
 import com.lufficc.ishuhui.fragment.presenter.CategoryFragmentPresenter;
 import com.lufficc.ishuhui.model.ComicModel;
+import com.lufficc.lightadapter.LoadMoreFooterModel;
 import com.lufficc.stateLayout.StateLayout;
 
 import butterknife.BindView;
 import retrofit2.Call;
 
-public class CategoryFragment extends BaseFragment implements IView<ComicModel>, SwipeRefreshLayout.OnRefreshListener, LoadMoreAdapter.LoadMoreListener {
+public class CategoryFragment extends BaseFragment implements IView<ComicModel>, SwipeRefreshLayout.OnRefreshListener, LoadMoreFooterModel.LoadMoreListener {
     private static final String CLASSIFY_ID = "CLASSIFY_ID";
 
     //ClassifyId   分类标识，0热血，1国产，2同人，3鼠绘
@@ -37,6 +37,8 @@ public class CategoryFragment extends BaseFragment implements IView<ComicModel>,
 
     CategoryFragmentPresenter presenter;
     ComicAdapter adapter;
+    LoadMoreFooterModel loadMoreFooterModel;
+
     private int PageIndex = 0, prevPage;
 
     public static CategoryFragment newInstance(String classifyId) {
@@ -85,18 +87,19 @@ public class CategoryFragment extends BaseFragment implements IView<ComicModel>,
                 getData();
             }
         });
-        stateLayout.setInfoContentViewMargin(0,-256,0,0);
+        stateLayout.setInfoContentViewMargin(0, -256, 0, 0);
         presenter = new CategoryFragmentPresenter(this);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        recyclerView.setAdapter(adapter = new ComicAdapter(getContext()));
+        recyclerView.setAdapter(adapter = new ComicAdapter(getActivity()));
+        loadMoreFooterModel = adapter.getLoadMoreFooterModel();
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark);
-        adapter.setLoadMoreListener(this);
+        loadMoreFooterModel.setLoadMoreListener(this);
         getData();
     }
 
     private void getData() {
-        if (adapter.isDataEmpty())
+        if (adapter.getData().isEmpty())
             stateLayout.showProgressView();
         presenter.getData(classifyId, PageIndex);
     }
@@ -116,7 +119,7 @@ public class CategoryFragment extends BaseFragment implements IView<ComicModel>,
     public void onSuccess(ComicModel comicModel) {
         stateLayout.showContentView();
         if (comicModel.Return.List.isEmpty()) {
-            adapter.noMoreData();
+            loadMoreFooterModel.noMoreData();
         } else {
             if (PageIndex == 0) {
                 adapter.setData(comicModel.Return.List);
@@ -129,19 +132,19 @@ public class CategoryFragment extends BaseFragment implements IView<ComicModel>,
 
     @Override
     public void onFailure(Call call, Throwable e) {
-        if (adapter.isDataEmpty()) {
-            stateLayout.showErrorView();
+        if (adapter.getData().isEmpty()) {
+            stateLayout.showErrorView(e.getMessage());
         } else {
-            adapter.noMoreData("加载出错");
+            loadMoreFooterModel.errorOccur(e.getMessage());
         }
     }
 
     @Override
     public void onRefresh() {
-        adapter.noMoreData();
+        loadMoreFooterModel.canLoadMore();
         prevPage = PageIndex;
         PageIndex = 0;
-        if (adapter.isDataEmpty()) {
+        if (adapter.getData().isEmpty()) {
             stateLayout.showProgressView();
         }
         getData();

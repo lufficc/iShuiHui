@@ -2,18 +2,18 @@ package com.lufficc.ishuhui.manager;
 
 import android.support.annotation.Nullable;
 
+import com.lufficc.ishuhui.model.Chapter;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import com.lufficc.ishuhui.model.Chapter;
 
 /**
  * Created by lcc_luffy on 2016/5/27.
  */
 public class ChapterListManager {
     private static ChapterListManager instance;
-    private List<Chapter> chapters;
+    private List<? super Object> chapters;
     private int currentIndex;
 
     private ChapterListManager() {
@@ -25,11 +25,11 @@ public class ChapterListManager {
         return instance;
     }
 
-    public List<Chapter> getChapters() {
+    public List<?> getChapters() {
         return chapters;
     }
 
-    public void setChapters(Collection<Chapter> chapters, int currentIndex) {
+    public void setChapters(Collection<? super Object> chapters, int currentIndex) {
         if (this.chapters == null)
             this.chapters = new ArrayList<>();
         this.chapters.clear();
@@ -41,7 +41,7 @@ public class ChapterListManager {
     public Chapter nextChapter() {
         if (currentIndex > 0 && !chapters.isEmpty()) {
             currentIndex--;
-            return chapters.get(currentIndex);
+            return (Chapter) chapters.get(currentIndex);
         }
         return null;
     }

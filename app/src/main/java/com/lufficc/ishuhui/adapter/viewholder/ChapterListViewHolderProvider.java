@@ -1,6 +1,7 @@
-package com.lufficc.ishuhui.adapter;
+package com.lufficc.ishuhui.adapter.viewholder;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,55 +13,36 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.lufficc.ishuhui.R;
 import com.lufficc.ishuhui.activity.WebActivity;
+import com.lufficc.ishuhui.adapter.ChapterListAdapter;
 import com.lufficc.ishuhui.manager.ChapterListManager;
 import com.lufficc.ishuhui.model.Chapter;
 import com.lufficc.ishuhui.utils.JsonUtil;
 import com.lufficc.ishuhui.utils.PtrUtil;
+import com.lufficc.lightadapter.ViewHolderProvider;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by lcc_luffy on 2016/1/23.
+ * Created by lufficc on 2016/9/5.
  */
-public class ChapterAdapter extends LoadMoreAdapter<Chapter> {
 
-    private final OnItemClickListener onItemClickListener;
+public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, ChapterListViewHolderProvider.ViewHolder> {
+    public ChapterListViewHolderProvider(ChapterListAdapter adapter) {
+        this.adapter = adapter;
+    }
 
-    public ChapterAdapter(final Context context) {
-        onItemClickListener = new OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                Chapter chapter = data.get(position);
-                ChapterListManager.instance().setChapters(data, position);
-                PtrUtil.getInstance().start()
-                        .put("book" + chapter.BookId, JsonUtil.getInstance().toJson(chapter))
-                        .put("book_chapter_" + chapter.BookId, chapter.ChapterNo)
-                        .commit();
-                WebActivity.showWebView(context, chapter);
-            }
-        };
-        setOnItemClickListener(onItemClickListener);
+    private ChapterListAdapter adapter;
+
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull LayoutInflater layoutInflater, @NonNull ViewGroup parent) {
+        return new ViewHolder(layoutInflater.inflate(R.layout.item_chapter, parent, false));
     }
 
     @Override
-    public void onBindHolder(RecyclerView.ViewHolder holder, final int position) {
-        ((ViewHolder) holder).onBindData(data.get(position),position);
-        if (onItemClickListener != null) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onItemClickListener.onItemClick(position);
-                }
-            });
-        }
+    public void onBindViewHolder(Chapter chapter, ViewHolder viewHolder) {
+        viewHolder.onBindData(chapter);
     }
-
-    @Override
-    public RecyclerView.ViewHolder onCreateHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chapter, parent, false));
-    }
-
 
     class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.chapter_icon)
@@ -78,13 +60,14 @@ public class ChapterAdapter extends LoadMoreAdapter<Chapter> {
         @BindView(R.id.chapter_view)
         Button chapter_view;
 
+
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-
-        void onBindData(Chapter data, final int position) {
+        @SuppressLint("SetTextI18n")
+        void onBindData(final Chapter data) {
             chapter_name.setText(data.Title);
             chapter_number.setText(data.Sort + "话");
             chapter_date.setText(data.RefreshTimeStr);
@@ -96,7 +79,12 @@ public class ChapterAdapter extends LoadMoreAdapter<Chapter> {
             chapter_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onItemClickListener.onItemClick(position);
+                    ChapterListManager.instance().setChapters(adapter.getData(), adapter.getData().indexOf(data));
+                    PtrUtil.getInstance().start()
+                            .put("book" + data.BookId, JsonUtil.getInstance().toJson(data))
+                            .put("book_chapter_" + data.BookId, data.ChapterNo)
+                            .commit();
+                    WebActivity.showWebView(itemView.getContext(), data);
                 }
             });
         }
