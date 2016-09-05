@@ -23,7 +23,7 @@ public class HeaderViewProvider extends ViewHolderProvider<HeaderViewProvider.He
     }
 
     @Override
-    public void onBindViewHolder(Header header, ViewHolder viewHolder) {
+    public void onBindViewHolder(Header header, ViewHolder viewHolder,int position) {
         viewHolder.bind(header);
     }
 

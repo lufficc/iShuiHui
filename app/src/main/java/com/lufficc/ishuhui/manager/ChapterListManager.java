@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class ChapterListManager {
     private static ChapterListManager instance;
-    private List<? super Object> chapters;
+    private List<Chapter> chapters;
     private int currentIndex;
 
     private ChapterListManager() {
@@ -29,7 +29,7 @@ public class ChapterListManager {
         return chapters;
     }
 
-    public void setChapters(Collection<? super Object> chapters, int currentIndex) {
+    public void setChapters(Collection<Chapter> chapters, int currentIndex) {
         if (this.chapters == null)
             this.chapters = new ArrayList<>();
         this.chapters.clear();
@@ -41,7 +41,7 @@ public class ChapterListManager {
     public Chapter nextChapter() {
         if (currentIndex > 0 && !chapters.isEmpty()) {
             currentIndex--;
-            return (Chapter) chapters.get(currentIndex);
+            return chapters.get(currentIndex);
         }
         return null;
     }

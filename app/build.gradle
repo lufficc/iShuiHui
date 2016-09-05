@@ -48,5 +48,5 @@ dependencies {
 
 
     compile 'com.lufficc:stateLayout:0.0.6'
-    compile 'com.lufficc:lightAdapter:0.0.6'
+    compile 'com.lufficc:lightAdapter:0.0.7'
 }

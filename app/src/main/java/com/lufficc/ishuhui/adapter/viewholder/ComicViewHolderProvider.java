@@ -27,7 +27,7 @@ public class ComicViewHolderProvider extends ViewHolderProvider<Comic,ComicViewH
     }
 
     @Override
-    public void onBindViewHolder(Comic comic, ViewHolder viewHolder) {
+    public void onBindViewHolder(Comic comic, ViewHolder viewHolder,int position) {
         viewHolder.onBindData(comic);
     }
 

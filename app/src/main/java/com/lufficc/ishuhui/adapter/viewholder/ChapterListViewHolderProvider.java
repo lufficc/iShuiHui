@@ -40,8 +40,8 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
     }
 
     @Override
-    public void onBindViewHolder(Chapter chapter, ViewHolder viewHolder) {
-        viewHolder.onBindData(chapter);
+    public void onBindViewHolder(Chapter chapter, ViewHolder viewHolder, int position) {
+        viewHolder.onBindData(chapter, position);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -67,7 +67,7 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
         }
 
         @SuppressLint("SetTextI18n")
-        void onBindData(final Chapter data) {
+        void onBindData(final Chapter data, final int position) {
             chapter_name.setText(data.Title);
             chapter_number.setText(data.Sort + "话");
             chapter_date.setText(data.RefreshTimeStr);
@@ -79,7 +79,7 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
             chapter_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ChapterListManager.instance().setChapters(adapter.getData(), adapter.getData().indexOf(data));
+                    ChapterListManager.instance().setChapters(adapter.getData(), position);
                     PtrUtil.getInstance().start()
                             .put("book" + data.BookId, JsonUtil.getInstance().toJson(data))
                             .put("book_chapter_" + data.BookId, data.ChapterNo)
