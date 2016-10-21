@@ -9,8 +9,8 @@ android {
         applicationId 'com.lufficc.ishuhui'
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 8
-        versionName "1.2.8"
+        versionCode 9
+        versionName "1.2.9"
     }
     buildTypes {
         release {
