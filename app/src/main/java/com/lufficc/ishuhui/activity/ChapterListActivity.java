@@ -29,6 +29,7 @@ import com.lufficc.ishuhui.model.Comic;
 import com.lufficc.ishuhui.model.User;
 import com.lufficc.ishuhui.utils.JsonUtil;
 import com.lufficc.ishuhui.utils.PtrUtil;
+import com.lufficc.ishuhui.utils.SubscribeUtil;
 import com.lufficc.ishuhui.widget.DefaultItemDecoration;
 import com.lufficc.lightadapter.LoadMoreFooterModel;
 import com.lufficc.stateLayout.StateLayout;
@@ -123,7 +124,7 @@ public class ChapterListActivity extends BaseActivity implements
                 getResources().getDimensionPixelSize(R.dimen.activity_vertical_margin)
         ));
 
-        isSubscribed = PtrUtil.getInstance().getBoolean("bookId" + bookId + "isSubscribed", false);
+        isSubscribed = SubscribeUtil.isSubscribed(bookId);
         if (isSubscribed) {
             fab_subscribe.setImageResource(R.mipmap.ic_done);
         }
@@ -210,7 +211,7 @@ public class ChapterListActivity extends BaseActivity implements
                 int ChapterNo = PtrUtil.getInstance().getInt("book_chapter_" + chapter.BookId, 0);
                 int position = 0;
                 for (Object findChapter : adapter.getData()) {
-                    if (((Chapter)findChapter).ChapterNo == ChapterNo) {
+                    if (((Chapter) findChapter).ChapterNo == ChapterNo) {
                         break;
                     }
                     position++;
@@ -221,9 +222,6 @@ public class ChapterListActivity extends BaseActivity implements
         }
         return super.onOptionsItemSelected(item);
     }
-
-    boolean simple_mode = false;
-
 
     @Override
     public int getLayoutId() {
@@ -275,13 +273,13 @@ public class ChapterListActivity extends BaseActivity implements
 
     @Override
     public void onSubscribe(boolean isSubscribed) {
-        if (!isSubscribed) {
+        if (!ChapterListActivity.this.isSubscribed) {
             toast("订阅成功");
         } else {
             toast("已取消订阅");
         }
         ChapterListActivity.this.isSubscribed = !ChapterListActivity.this.isSubscribed;
-        if (isSubscribed) {
+        if (ChapterListActivity.this.isSubscribed) {
             fab_subscribe.setImageResource(R.mipmap.ic_done);
         } else {
             fab_subscribe.setImageResource(R.mipmap.ic_add);

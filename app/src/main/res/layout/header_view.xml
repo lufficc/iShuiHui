@@ -22,21 +22,13 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/header_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:padding="5dp"
-            android:paddingLeft="7dp"
-            android:paddingStart="7dp"
-            android:textColor="@color/white"
-            android:textSize="18sp" />
-
-        <TextView
             android:id="@+id/header_des"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="7dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="10dp"
             android:textColor="@color/white"
             android:textSize="12sp" />
     </LinearLayout>

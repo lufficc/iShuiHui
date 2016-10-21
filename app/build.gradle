@@ -4,7 +4,7 @@ apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    buildToolsVersion "24.0.2"
     defaultConfig {
         applicationId 'com.lufficc.ishuhui'
         minSdkVersion 15
@@ -47,6 +47,6 @@ dependencies {
     compile 'com.umeng.analytics:analytics:latest.integration'
 
 
-    compile 'com.lufficc:stateLayout:0.0.6'
+    compile 'com.lufficc:stateLayout:0.0.7'
     compile 'com.lufficc:lightAdapter:0.0.7'
 }

@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.google.gson.JsonObject;
 import com.lufficc.ishuhui.activity.iview.SubscribeView;
 import com.lufficc.ishuhui.manager.RetrofitManager;
-import com.lufficc.ishuhui.utils.PtrUtil;
+import com.lufficc.ishuhui.utils.SubscribeUtil;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,10 +30,7 @@ public class SubscribePresenter {
             public void onResponse(retrofit2.Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     subscribeView.onSubscribe(isSubscribed);
-                    PtrUtil.getInstance()
-                            .start()
-                            .put("bookId" + bookId + "isSubscribed", isSubscribed)
-                            .commit();
+                    SubscribeUtil.subscribe(bookId);
                 } else {
                     subscribeView.onFailSubscribe(response.message());
                 }

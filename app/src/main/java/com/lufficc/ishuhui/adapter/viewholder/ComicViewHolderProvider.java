@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.lufficc.ishuhui.R;
 import com.lufficc.ishuhui.model.Comic;
+import com.lufficc.ishuhui.utils.SubscribeUtil;
 import com.lufficc.ishuhui.widget.TagImageView;
 import com.lufficc.lightadapter.ViewHolderProvider;
 
@@ -20,14 +21,20 @@ import butterknife.ButterKnife;
  * Created by lufficc on 2016/9/1.
  */
 
-public class ComicViewHolderProvider extends ViewHolderProvider<Comic,ComicViewHolderProvider.ViewHolder>{
+public class ComicViewHolderProvider extends ViewHolderProvider<Comic, ComicViewHolderProvider.ViewHolder> {
+    private boolean isSubscribed;
+
+    public ComicViewHolderProvider(boolean isSubscribed) {
+        this.isSubscribed = isSubscribed;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(@NonNull LayoutInflater layoutInflater, @NonNull ViewGroup parent) {
         return new ViewHolder(layoutInflater.inflate(R.layout.item_comic, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(Comic comic, ViewHolder viewHolder,int position) {
+    public void onBindViewHolder(Comic comic, ViewHolder viewHolder, int position) {
         viewHolder.onBindData(comic);
     }
 
@@ -49,6 +56,7 @@ public class ComicViewHolderProvider extends ViewHolderProvider<Comic,ComicViewH
 
         @BindView(R.id.title_LastChapter)
         TextView title_LastChapter;
+
         ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
@@ -78,6 +86,9 @@ public class ComicViewHolderProvider extends ViewHolderProvider<Comic,ComicViewH
                 }
             } catch (Exception e) {
                 tagImageView.setTagEnable(false);
+            }
+            if (isSubscribed) {
+                SubscribeUtil.subscribe(data.Id);
             }
         }
     }

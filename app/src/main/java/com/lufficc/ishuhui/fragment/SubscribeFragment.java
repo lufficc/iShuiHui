@@ -64,7 +64,7 @@ public class SubscribeFragment extends BaseFragment implements IView<ComicModel>
         stateLayout.setInfoContentViewMargin(0, -256, 0, 0);
         subscribeFragmentPresenter = new SubscribeFragmentPresenter(this);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        adapter = new ComicAdapter(getContext());
+        adapter = new ComicAdapter(getContext(), true);
         footerModel = adapter.getLoadMoreFooterModel();
         footerModel.noMoreData();
         recyclerView.setAdapter(adapter);

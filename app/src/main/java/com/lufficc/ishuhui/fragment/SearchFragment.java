@@ -75,7 +75,7 @@ public class SearchFragment extends BaseFragment {
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         recyclerView.setAdapter(adapter = new ComicAdapter(getContext()));
         footerModel = adapter.getLoadMoreFooterModel();
-        footerModel.hideFooter();
+        footerModel.noMoreData();
         getData();
     }
 
@@ -85,6 +85,7 @@ public class SearchFragment extends BaseFragment {
                 .enqueue(new Callback<ComicModel>() {
                     @Override
                     public void onResponse(Call<ComicModel> call, Response<ComicModel> response) {
+                        footerModel.noMoreData();
                         if (response.isSuccessful()) {
                             List<Comic> comics = response.body().Return.List;
                             if (comics.isEmpty()) {
@@ -103,6 +104,7 @@ public class SearchFragment extends BaseFragment {
 
                     @Override
                     public void onFailure(Call<ComicModel> call, Throwable t) {
+                        footerModel.noMoreData();
                         toast(t.getMessage());
                         stateLayout.showErrorView(t.getMessage());
                     }

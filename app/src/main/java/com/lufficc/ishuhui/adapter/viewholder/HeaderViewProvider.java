@@ -57,18 +57,15 @@ public class HeaderViewProvider extends ViewHolderProvider<HeaderViewProvider.He
         String url;
     }
     class ViewHolder extends RecyclerView.ViewHolder{
-        TextView title;
         TextView des;
         ImageView header_image;
         public ViewHolder(View itemView) {
             super(itemView);
             header_image = (ImageView) itemView.findViewById(R.id.header_img);
-            title = ((TextView) itemView.findViewById(R.id.header_title));
             des = ((TextView) itemView.findViewById(R.id.header_des));
         }
         void bind(Header header)
         {
-            title.setText(header.title);
             des.setText(header.des);
             Glide.with(itemView.getContext()).load(header.url).centerCrop().into(header_image);
         }

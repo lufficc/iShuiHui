@@ -17,11 +17,15 @@ public class ComicAdapter extends LightAdapter {
     private LoadMoreFooterModel loadMoreFooterModel;
 
     public ComicAdapter(final Context context) {
-        register(Comic.class, new ComicViewHolderProvider());
+        this(context, false);
+    }
+
+    public ComicAdapter(final Context context, boolean subscribe) {
+        register(Comic.class, new ComicViewHolderProvider(subscribe));
         register(LoadMoreFooterModel.class, new LoadMoreFooterViewHolderProvider());
         addFooter(loadMoreFooterModel = new LoadMoreFooterModel());
         loadMoreFooterModel.setFullSpan(true);
-        loadMoreFooterModel.setNoMoreMsg("加载完成");
+        loadMoreFooterModel.setNoMoreMsg("全部加载完成");
         setOnDataClickListener(new OnDataClickListener() {
             @Override
             public void onDataClick(int i, Object o) {
