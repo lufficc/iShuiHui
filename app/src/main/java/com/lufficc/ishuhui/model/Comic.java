@@ -2,13 +2,11 @@ package com.lufficc.ishuhui.model;
 
 import java.io.Serializable;
 
-import io.realm.RealmObject;
-
 /**
  * Created by lufficc on 2016/8/25.
  */
 
-public class Comic extends RealmObject implements Serializable {
+public class Comic implements Serializable {
     public int Id;
     public String Title;
     public String FrontCover;
