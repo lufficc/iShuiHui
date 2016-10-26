@@ -88,7 +88,7 @@ public class ComicViewHolderProvider extends ViewHolderProvider<Comic, ComicView
                 tagImageView.setTagEnable(false);
             }
             if (isSubscribed) {
-                SubscribeUtil.subscribe(data.Id);
+                SubscribeUtil.subscribe(data.Id, true);
             }
         }
     }

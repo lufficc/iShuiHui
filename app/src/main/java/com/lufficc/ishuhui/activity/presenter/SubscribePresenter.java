@@ -29,8 +29,8 @@ public class SubscribePresenter {
             @Override
             public void onResponse(retrofit2.Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                    subscribeView.onSubscribe(isSubscribed);
-                    SubscribeUtil.subscribe(bookId);
+                    subscribeView.onSubscribe(!isSubscribed);
+                    SubscribeUtil.subscribe(bookId, !isSubscribed);
                 } else {
                     subscribeView.onFailSubscribe(response.message());
                 }

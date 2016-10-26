@@ -74,7 +74,8 @@ public class SubscribeFragment extends BaseFragment implements IView<ComicModel>
 
 
     @Override
-    public void onCreateView() {
+    public void onResume() {
+        super.onResume();
         getData();
     }
 

@@ -273,13 +273,13 @@ public class ChapterListActivity extends BaseActivity implements
 
     @Override
     public void onSubscribe(boolean isSubscribed) {
-        if (!ChapterListActivity.this.isSubscribed) {
+        if (isSubscribed) {
             toast("订阅成功");
         } else {
             toast("已取消订阅");
         }
-        ChapterListActivity.this.isSubscribed = !ChapterListActivity.this.isSubscribed;
-        if (ChapterListActivity.this.isSubscribed) {
+        ChapterListActivity.this.isSubscribed = isSubscribed;
+        if (isSubscribed) {
             fab_subscribe.setImageResource(R.mipmap.ic_done);
         } else {
             fab_subscribe.setImageResource(R.mipmap.ic_add);

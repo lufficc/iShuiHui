@@ -6,8 +6,8 @@ package com.lufficc.ishuhui.utils;
 
 public class SubscribeUtil {
 
-    public static void subscribe(int bookId) {
-        PtrUtil.getInstance().start().put(key(bookId), true).commit();
+    public static void subscribe(int bookId, boolean subscribe) {
+        PtrUtil.getInstance().start().put(key(bookId), subscribe).commit();
     }
 
     public static boolean isSubscribed(int bookId) {
