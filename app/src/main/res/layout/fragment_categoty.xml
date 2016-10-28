@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <com.lufficc.stateLayout.StateLayout
         android:id="@+id/stateLayout"
         android:layout_width="match_parent"
@@ -15,9 +16,9 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView"
-                tools:listitem="@layout/item_comic"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                tools:listitem="@layout/item_comic" />
         </android.support.v4.widget.SwipeRefreshLayout>
     </com.lufficc.stateLayout.StateLayout>
 </android.support.design.widget.CoordinatorLayout>

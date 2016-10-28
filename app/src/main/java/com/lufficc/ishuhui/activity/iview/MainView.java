@@ -10,6 +10,7 @@ import com.lufficc.ishuhui.model.FirLatestModel;
 
 public interface MainView {
     int FRAGMENT_VIEW_PAGER = 1;
+    int FRAGMENT_SEARCH = 2;
 
     void onShowFragment(Fragment fragment);
     void onUpdate(FirLatestModel firLatestModel);

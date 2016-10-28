@@ -2,6 +2,7 @@ package com.lufficc.ishuhui.activity.presenter;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.support.annotation.BoolRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -73,9 +74,8 @@ public class MainPresenter {
 
     public int getMenuId() {
         switch (get()) {
-
             default:
-                return R.id.action_same;
+                return 1;
         }
     }
 
@@ -112,6 +112,8 @@ public class MainPresenter {
             return;
         if (fragment == null) {
             switch (fragmentId) {
+                case MainView.FRAGMENT_SEARCH:
+                    break;
                 default:
                     fragment = getViewPagerFragment();
                     break;

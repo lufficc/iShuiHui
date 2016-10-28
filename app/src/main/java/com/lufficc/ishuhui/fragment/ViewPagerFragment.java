@@ -20,6 +20,7 @@ public class ViewPagerFragment extends BaseFragment implements ViewPager.OnPageC
         super.initialize(savedInstanceState);
         viewPager.setAdapter(new FragmentsAdapter(getChildFragmentManager()));
         viewPager.addOnPageChangeListener(this);
+        viewPager.setCurrentItem(0);
     }
 
     private ViewPager.OnPageChangeListener onPageChangeListener;

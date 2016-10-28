@@ -25,6 +25,7 @@ public class CategoryFragment extends BaseFragment implements IView<ComicModel>,
     public static final String CLASSIFY_ID_CHINA = "1";
     public static final String CLASSIFY_ID_SAME = "2";
     public static final String CLASSIFY_ID_MOUSE = "3";
+    public static final String CLASSIFY_ID_ALL = "[0,1,2,3]";
     private String classifyId;
     @BindView(R.id.stateLayout)
     StateLayout stateLayout;

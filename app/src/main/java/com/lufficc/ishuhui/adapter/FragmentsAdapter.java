@@ -21,7 +21,7 @@ public class FragmentsAdapter extends FragmentPagerAdapter {
         super(fm);
         fragments.add(SubscribeFragment.newInstance());
         fragments.add(CategoryFragment.newInstance(CategoryFragment.CLASSIFY_ID_HOT));
-        fragments.add(CategoryFragment.newInstance(CategoryFragment.CLASSIFY_ID_MOUSE));
+        fragments.add(CategoryFragment.newInstance(CategoryFragment.CLASSIFY_ID_ALL));
     }
 
     @Override

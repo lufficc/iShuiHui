@@ -100,7 +100,6 @@ public class MainActivity extends BaseActivity implements
         profile_image = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.profile_image);
         email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.email);
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.getMenu().findItem(mainPresenter.getMenuId()).setChecked(true);
 
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, 0, 0);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
@@ -285,7 +284,6 @@ public class MainActivity extends BaseActivity implements
                 transaction.show(searchFragment);
             }
             transaction.commit();
-            setTitle(getString(R.string.search));
         }
         KeyboardUtil.hideSoftInput(this);
         return true;

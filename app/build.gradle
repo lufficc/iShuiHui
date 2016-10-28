@@ -47,6 +47,6 @@ dependencies {
     compile 'com.umeng.analytics:analytics:latest.integration'
 
 
-    compile 'com.lufficc:stateLayout:0.1.0'
+    compile 'com.lufficc:stateLayout:0.1.1'
     compile 'com.lufficc:lightAdapter:0.0.7'
 }

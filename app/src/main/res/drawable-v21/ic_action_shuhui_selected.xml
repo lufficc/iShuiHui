@@ -21,7 +21,7 @@
                 <path
                     android:name="Shape"
                     android:fillColor="#FFFFFF"
-                    android:pathData="M13,1.07L13,9h7c0,-4.08 -3.05,-7.44 -7,-7.93zM4,15c0,4.42 3.58,8 8,8s8,-3.58 8,-8v-4L4,11v4zM11,1.07C7.05,1.56 4,4.92 4,9h7L11,1.07z"/>
+                    android:pathData="M13,13v8h8v-8h-8zM3,21h8v-8L3,13v8zM3,3v8h8L11,3L3,3zM16.66,1.69L11,7.34 16.66,13l5.66,-5.66 -5.66,-5.65z"/>
             </group>
         </group>
     </group>
