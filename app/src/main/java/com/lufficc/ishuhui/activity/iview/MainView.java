@@ -9,12 +9,8 @@ import com.lufficc.ishuhui.model.FirLatestModel;
  */
 
 public interface MainView {
-    int FRAGMENT_SUBSCRIBE = 5;
-    int FRAGMENT_HOT = 1;
-    int FRAGMENT_SHUHUI = 2;
-    int FRAGMENT_SAME = 12;
+    int FRAGMENT_VIEW_PAGER = 1;
 
-    void onSuggestions(String[] strings);
     void onShowFragment(Fragment fragment);
     void onUpdate(FirLatestModel firLatestModel);
 }

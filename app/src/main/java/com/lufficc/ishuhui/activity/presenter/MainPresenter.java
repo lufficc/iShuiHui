@@ -6,16 +6,13 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.gson.JsonArray;
 import com.lufficc.ishuhui.R;
 import com.lufficc.ishuhui.activity.iview.MainView;
-import com.lufficc.ishuhui.fragment.CategoryFragment;
-import com.lufficc.ishuhui.fragment.SubscribeFragment;
+import com.lufficc.ishuhui.fragment.ViewPagerFragment;
 import com.lufficc.ishuhui.manager.FirManager;
-import com.lufficc.ishuhui.manager.RetrofitManager;
 import com.lufficc.ishuhui.model.FirLatestModel;
 import com.lufficc.ishuhui.utils.JsonUtil;
 import com.lufficc.ishuhui.utils.PtrUtil;
@@ -24,10 +21,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.lufficc.ishuhui.activity.iview.MainView.FRAGMENT_HOT;
-import static com.lufficc.ishuhui.activity.iview.MainView.FRAGMENT_SAME;
-import static com.lufficc.ishuhui.activity.iview.MainView.FRAGMENT_SHUHUI;
-import static com.lufficc.ishuhui.activity.iview.MainView.FRAGMENT_SUBSCRIBE;
 import static com.lufficc.ishuhui.utils.ScreenUtil.context;
 
 /**
@@ -44,8 +37,11 @@ public class MainPresenter {
         this.mainView = mainView;
         this.fragmentManager = fragmentManager;
         switchFragment(get());
-        getSuggestions();
         checkUpdate();
+    }
+
+    public void setCurrentFragment(int index) {
+        getViewPagerFragment().setCurrentFragment(index);
     }
 
     public void checkUpdate() {
@@ -75,38 +71,9 @@ public class MainPresenter {
         });
     }
 
-
-    private void getSuggestions() {
-        String hotWord = PtrUtil.getInstance().getString("hotWord", null);
-        if (hotWord != null) {
-            mainView.onSuggestions(string2Array(hotWord));
-        } else {
-            RetrofitManager.api().hotWord().enqueue(new Callback<JsonArray>() {
-                @Override
-                public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
-                    if (response.isSuccessful()) {
-                        mainView.onSuggestions(string2Array(response.body().toString()));
-                        PtrUtil.getInstance().start().put("hotWord", response.body().toString()).commit();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JsonArray> call, Throwable t) {
-                    Log.i("main", t.getMessage());
-                }
-            });
-        }
-
-    }
-
     public int getMenuId() {
         switch (get()) {
-            case FRAGMENT_SUBSCRIBE:
-                return R.id.action_subscribe;
-            case FRAGMENT_HOT:
-                return R.id.action_hot;
-            case FRAGMENT_SHUHUI:
-                return R.id.action_shuhui;
+
             default:
                 return R.id.action_same;
         }
@@ -126,8 +93,14 @@ public class MainPresenter {
     }
 
     private int get() {
-        int defaultFragment = MainView.FRAGMENT_HOT;
+        int defaultFragment = MainView.FRAGMENT_VIEW_PAGER;
         return PtrUtil.getInstance().getInt("default_fragment", defaultFragment);
+    }
+
+    private ViewPagerFragment viewPagerFragment;
+
+    private ViewPagerFragment getViewPagerFragment() {
+        return viewPagerFragment == null ? viewPagerFragment = ViewPagerFragment.newInstance() : viewPagerFragment;
     }
 
     public void switchFragment(int fragmentId) {
@@ -139,17 +112,8 @@ public class MainPresenter {
             return;
         if (fragment == null) {
             switch (fragmentId) {
-                case FRAGMENT_HOT:
-                    fragment = CategoryFragment.newInstance(CategoryFragment.CLASSIFY_ID_HOT);
-                    break;
-                case FRAGMENT_SHUHUI:
-                    fragment = CategoryFragment.newInstance(CategoryFragment.CLASSIFY_ID_MOUSE);
-                    break;
-                case FRAGMENT_SAME:
-                    fragment = CategoryFragment.newInstance(CategoryFragment.CLASSIFY_ID_SAME);
-                    break;
                 default:
-                    fragment = SubscribeFragment.newInstance();
+                    fragment = getViewPagerFragment();
                     break;
             }
             fragmentMap.put(fragmentId, fragment);

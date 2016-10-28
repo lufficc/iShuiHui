@@ -11,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.lufficc.ishuhui.R;
@@ -39,15 +41,18 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
+import butterknife.BindViews;
+import butterknife.OnCheckedChanged;
 
 public class MainActivity extends BaseActivity implements
         MainView,
         View.OnClickListener,
         NavigationView.OnNavigationItemSelectedListener,
-        MaterialSearchView.OnQueryTextListener {
+        MaterialSearchView.OnQueryTextListener, MaterialSearchView.SearchViewListener, ViewPager.OnPageChangeListener {
     @BindView(R.id.fab)
     FloatingActionButton actionButton;
 
@@ -65,6 +70,9 @@ public class MainActivity extends BaseActivity implements
 
     TextView email;
 
+    @BindViews({R.id.actionbar_love, R.id.actionbar_hot, R.id.actionbar_shuhui})
+    List<RadioButton> actionBarButtons;
+
     private MainPresenter mainPresenter;
 
     @Override
@@ -74,7 +82,7 @@ public class MainActivity extends BaseActivity implements
         MobclickAgent.enableEncrypt(true);
         init();
         onLogin(User.getInstance());
-
+        setTitle("");
     }
 
     @Override
@@ -88,6 +96,7 @@ public class MainActivity extends BaseActivity implements
     private void init() {
         mainPresenter = new MainPresenter(this, getSupportFragmentManager());
         searchView.setOnQueryTextListener(this);
+        searchView.setOnSearchViewListener(this);
         profile_image = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.profile_image);
         email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.email);
         navigationView.setNavigationItemSelectedListener(this);
@@ -123,6 +132,7 @@ public class MainActivity extends BaseActivity implements
                 return true;
             }
         });
+
     }
 
     @Override
@@ -174,12 +184,12 @@ public class MainActivity extends BaseActivity implements
             transaction.hide(searchFragment).show(mainPresenter.getCurrentFragment());
             setTitle(mainPresenter.getCurrentFragment().toString());
             transaction.commit();
-            if (searchView.isSearchOpen()) {
+            if (!searchViewClosedLock && searchView.isSearchOpen()) {
                 searchView.closeSearch();
             }
             return true;
         }
-        if (searchView.isSearchOpen()) {
+        if (!searchViewClosedLock && searchView.isSearchOpen()) {
             searchView.closeSearch();
             return true;
         }
@@ -238,7 +248,7 @@ public class MainActivity extends BaseActivity implements
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_subscribe:
+            /*case R.id.action_subscribe:
                 mainPresenter.switchFragment(FRAGMENT_SUBSCRIBE);
                 break;
             case R.id.action_hot:
@@ -249,7 +259,7 @@ public class MainActivity extends BaseActivity implements
                 break;
             case R.id.action_same:
                 mainPresenter.switchFragment(FRAGMENT_SAME);
-                break;
+                break;*/
         }
         hideSearchFragment();
         drawerLayout.closeDrawers();
@@ -286,20 +296,16 @@ public class MainActivity extends BaseActivity implements
         return true;
     }
 
-    @Override
-    public void onSuggestions(String[] strings) {
-        searchView.setSuggestions(strings);
-    }
 
     @Override
     public void onShowFragment(Fragment fragment) {
-        setTitle(fragment.toString());
+
     }
 
     @Override
     public void onUpdate(final FirLatestModel firLatestModel) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(firLatestModel.changelog+String.format(Locale.CHINA,"[%d K]",firLatestModel.binary.fsize / 1000))
+        builder.setMessage(firLatestModel.changelog + String.format(Locale.CHINA, "[%d K]", firLatestModel.binary.fsize / 1000))
                 .setTitle("新版本")
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
@@ -336,11 +342,47 @@ public class MainActivity extends BaseActivity implements
 
             @Override
             public void onSuccess(Uri apk) {
-                FirManager.install(MainActivity.this,apk);
+                FirManager.install(MainActivity.this, apk);
                 progressDialog.dismiss();
             }
         });
         progressDialog.show();
     }
 
+    @Override
+    public void onSearchViewShown() {
+    }
+
+    private boolean searchViewClosedLock = false;
+
+    @Override
+    public void onSearchViewClosed() {
+        searchViewClosedLock = true;
+        hideSearchFragment();
+        searchViewClosedLock = false;
+    }
+
+
+    @OnCheckedChanged({R.id.actionbar_love, R.id.actionbar_hot, R.id.actionbar_shuhui})
+    public void onActionbarCheck(RadioButton button, boolean check) {
+        if (check) {
+            int index = actionBarButtons.indexOf(button);
+            mainPresenter.setCurrentFragment(index);
+        }
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        actionBarButtons.get(position).setChecked(true);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
 }
