@@ -28,6 +28,7 @@ import com.lufficc.ishuhui.R;
 import com.lufficc.ishuhui.constants.API;
 import com.lufficc.ishuhui.manager.ChapterListManager;
 import com.lufficc.ishuhui.model.Chapter;
+import com.lufficc.ishuhui.utils.AppUtils;
 import com.lufficc.ishuhui.utils.JsonUtil;
 import com.lufficc.ishuhui.utils.PtrUtil;
 import com.lufficc.stateLayout.StateLayout;
@@ -165,7 +166,7 @@ public class WebActivity extends BaseActivity {
 
     public static void showWebView(Context context, Chapter chapter) {
         Intent intent = new Intent(context, WebActivity.class);
-        intent.putExtra(WebActivity.URL, API.URL_IMG_CHAPTER + chapter.Id);
+        intent.putExtra(WebActivity.URL, AppUtils.getChapterUrl(chapter.Id));
         intent.putExtra(WebActivity.TITLE, chapter.Title);
         intent.putExtra(WebActivity.CHAPTER_NUM, chapter.ChapterNo);
         context.startActivity(intent);

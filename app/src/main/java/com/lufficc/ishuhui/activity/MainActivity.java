@@ -70,7 +70,7 @@ public class MainActivity extends BaseActivity implements
 
     TextView email;
 
-    @BindViews({R.id.actionbar_love, R.id.actionbar_hot, R.id.actionbar_shuhui})
+    @BindViews({R.id.actionbar_love, R.id.actionbar_categories, R.id.actionbar_hot})
     List<RadioButton> actionBarButtons;
 
     private MainPresenter mainPresenter;
@@ -82,7 +82,6 @@ public class MainActivity extends BaseActivity implements
         MobclickAgent.enableEncrypt(true);
         init();
         onLogin(User.getInstance());
-        setTitle("");
     }
 
     @Override
@@ -95,6 +94,7 @@ public class MainActivity extends BaseActivity implements
 
     private void init() {
         mainPresenter = new MainPresenter(this, getSupportFragmentManager());
+        setTitle("");
         searchView.setOnQueryTextListener(this);
         searchView.setOnSearchViewListener(this);
         profile_image = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.profile_image);
@@ -181,7 +181,6 @@ public class MainActivity extends BaseActivity implements
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
             transaction.hide(searchFragment).show(mainPresenter.getCurrentFragment());
-            setTitle(mainPresenter.getCurrentFragment().toString());
             transaction.commit();
             if (!searchViewClosedLock && searchView.isSearchOpen()) {
                 searchView.closeSearch();
@@ -247,18 +246,8 @@ public class MainActivity extends BaseActivity implements
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            /*case R.id.action_subscribe:
-                mainPresenter.switchFragment(FRAGMENT_SUBSCRIBE);
+            case R.id.action_download_manager:
                 break;
-            case R.id.action_hot:
-                mainPresenter.switchFragment(FRAGMENT_HOT);
-                break;
-            case R.id.action_shuhui:
-                mainPresenter.switchFragment(FRAGMENT_SHUHUI);
-                break;
-            case R.id.action_same:
-                mainPresenter.switchFragment(FRAGMENT_SAME);
-                break;*/
         }
         hideSearchFragment();
         drawerLayout.closeDrawers();
@@ -361,7 +350,7 @@ public class MainActivity extends BaseActivity implements
     }
 
 
-    @OnCheckedChanged({R.id.actionbar_love, R.id.actionbar_hot, R.id.actionbar_shuhui})
+    @OnCheckedChanged({R.id.actionbar_love, R.id.actionbar_categories, R.id.actionbar_hot})
     public void onActionbarCheck(RadioButton button, boolean check) {
         if (check) {
             int index = actionBarButtons.indexOf(button);

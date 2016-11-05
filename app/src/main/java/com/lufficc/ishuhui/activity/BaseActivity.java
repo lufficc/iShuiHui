@@ -21,9 +21,12 @@ import butterknife.Unbinder;
  * Created by lcc_luffy on 2016/1/23.
  */
 public abstract class BaseActivity extends AppCompatActivity {
+
+    @Nullable
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     private Unbinder unbind;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         initStatusBarColor();
@@ -35,8 +38,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(isDisplayHomeAsUpEnabled());
         }
     }
-    private void initStatusBarColor()
-    {
+
+    private void initStatusBarColor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
@@ -61,6 +64,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         toast.setText(msg);
         toast.show();
     }
+
     @Override
     public void onResume() {
         super.onResume();

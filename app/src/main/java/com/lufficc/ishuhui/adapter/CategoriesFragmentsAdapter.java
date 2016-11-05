@@ -4,8 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.lufficc.ishuhui.fragment.CategoriesFragment;
-import com.lufficc.ishuhui.fragment.SubscribeFragment;
+import com.lufficc.ishuhui.fragment.CategoryFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +13,14 @@ import java.util.List;
  * Created by lufficc on 2016/10/28.
  */
 
-public class FragmentsAdapter extends FragmentPagerAdapter {
+public class CategoriesFragmentsAdapter extends FragmentPagerAdapter {
     private List<Fragment> fragments = new ArrayList<>(3);
 
-    public FragmentsAdapter(FragmentManager fm) {
+    public CategoriesFragmentsAdapter(FragmentManager fm) {
         super(fm);
-        fragments.add(SubscribeFragment.newInstance());
-        fragments.add(CategoriesFragment.newInstance());
+        fragments.add(CategoryFragment.newInstance(CategoryFragment.CLASSIFY_ID_HOT));
+        fragments.add(CategoryFragment.newInstance(CategoryFragment.CLASSIFY_ID_MOUSE));
+        fragments.add(CategoryFragment.newInstance(CategoryFragment.CLASSIFY_ID_SAME));
     }
 
     @Override

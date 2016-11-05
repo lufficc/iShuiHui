@@ -41,14 +41,22 @@
                     <RadioButton
                         android:id="@+id/actionbar_love"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:button="@drawable/selector_actionbar_love"
                         android:checked="true"
                         tools:button="@drawable/ic_action_love"
                         tools:checked="true" />
+
+                    <RadioButton
+                        android:id="@+id/actionbar_categories"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:button="@drawable/selector_actionbar_shuhui"
+                        tools:button="@drawable/ic_action_categories" />
 
                     <RadioButton
                         android:id="@+id/actionbar_hot"
@@ -56,19 +64,10 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:button="@drawable/selector_actionbar_hot"
                         tools:button="@drawable/ic_action_hot" />
 
-                    <RadioButton
-                        android:id="@+id/actionbar_shuhui"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:button="@drawable/selector_actionbar_shuhui"
-                        tools:button="@drawable/ic_action_shuhui" />
+
                 </RadioGroup>
 
                 <com.miguelcatalan.materialsearchview.MaterialSearchView

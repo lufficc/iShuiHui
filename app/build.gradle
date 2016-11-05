@@ -4,7 +4,7 @@ apply plugin: 'android-apt'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    buildToolsVersion "24.0.3"
     defaultConfig {
         applicationId 'com.lufficc.ishuhui'
         minSdkVersion 15
@@ -45,6 +45,9 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
     compile 'com.umeng.analytics:analytics:latest.integration'
+
+    compile 'org.jsoup:jsoup:1.10.1'
+    compile 'com.github.chrisbanes.photoview:library:1.2.4'
 
 
     compile 'com.lufficc:stateLayout:0.1.1'
