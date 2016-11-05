@@ -16,8 +16,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
+        android:padding="5dp"
         android:textColor="#ffffff"
-        android:textSize="20sp"
+        android:textSize="16sp"
         tools:text="1/4" />
 </RelativeLayout>

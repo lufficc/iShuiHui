@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -137,6 +138,12 @@ public class ImagesActivity extends Activity implements ViewTreeObserver.OnPreDr
         return (int) (startInt + fraction * (endValue - startInt));
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        return true;
+    }
+
     /**
      * Float 估值器
      */
@@ -166,12 +173,16 @@ public class ImagesActivity extends Activity implements ViewTreeObserver.OnPreDr
     }
 
     @Override
-    public void onPhotoTap(View view, float x, float y) {
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
 
-        if (currentImage < imageItemList.size()) {
+    @Override
+    public void onPhotoTap(View view, float x, float y) {
+        /*if (currentImage < imageItemList.size()) {
             currentImage++;
             viewPager.setCurrentItem(currentImage);
-        }
-
+        }*/
     }
 }

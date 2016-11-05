@@ -94,7 +94,7 @@ public class ChapterListActivity extends BaseActivity implements
 
 
     private ChapterListAdapter initAdapter() {
-        adapter = new ChapterListAdapter(this);
+        adapter = new ChapterListAdapter(this,comic);
         adapter.addHeader(header = new HeaderViewProvider.Header());
         header.setTitle(comic.Title);
         header.setDes(comic.Explain);
