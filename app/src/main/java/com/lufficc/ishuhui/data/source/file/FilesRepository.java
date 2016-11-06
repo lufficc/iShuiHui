@@ -1,7 +1,7 @@
 package com.lufficc.ishuhui.data.source.file;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
+import android.support.annotation.WorkerThread;
 
 import com.lufficc.ishuhui.data.source.file.local.FilesLocalDataSource;
 import com.lufficc.ishuhui.data.source.file.remote.FilesRemoteDataSource;
@@ -46,9 +46,10 @@ public class FilesRepository implements FilesDataSource {
     }
 
     @Override
+    @WorkerThread
     public List<FileEntry> getFiles(String chapterId) {
         List<FileEntry> fileEntries = localDataSource.getFiles(chapterId);
-        if(fileEntries == null){
+        if (fileEntries == null || fileEntries.isEmpty()) {
             fileEntries = remoteDataSource.getFiles(chapterId);
         }
         return fileEntries;
@@ -59,7 +60,6 @@ public class FilesRepository implements FilesDataSource {
         if (!(dirties.containsKey(chapterId) && dirties.get(chapterId))) {
             List<FileEntry> fileEntries = fileEntryMap.get(chapterId);
             if (fileEntries != null) {
-                Log.i("main", "in memory cache");
                 callback.onFileLoaded(fileEntries);
                 return;
             }
@@ -67,7 +67,6 @@ public class FilesRepository implements FilesDataSource {
         localDataSource.getFiles(chapterId, new LoadFilesCallback() {
             @Override
             public void onFileLoaded(List<FileEntry> files) {
-                Log.i("main", "localDataSource");
                 fileEntryMap.put(chapterId, files);
                 callback.onFileLoaded(files);
             }
@@ -78,7 +77,6 @@ public class FilesRepository implements FilesDataSource {
                     @Override
                     public void onFileLoaded(List<FileEntry> files) {
                         fileEntryMap.put(chapterId, files);
-                        Log.i("main", "remoteDataSource");
                         callback.onFileLoaded(files);
                     }
 
@@ -97,8 +95,8 @@ public class FilesRepository implements FilesDataSource {
     }
 
     @Override
-    public void saveFile(FileEntry file) {
-
+    public long saveFile(FileEntry file) {
+        return localDataSource.saveFile(file);
     }
 
     @Override

@@ -84,8 +84,8 @@ public class FilesRemoteDataSource implements FilesDataSource {
     }
 
     @Override
-    public void saveFile(FileEntry file) {
-
+    public long saveFile(FileEntry file) {
+        return 0;
     }
 
     @Override

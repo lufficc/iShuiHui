@@ -20,6 +20,7 @@ import com.lufficc.ishuhui.activity.WebActivity;
 import com.lufficc.ishuhui.adapter.ChapterListAdapter;
 import com.lufficc.ishuhui.manager.ChapterListManager;
 import com.lufficc.ishuhui.model.Chapter;
+import com.lufficc.ishuhui.model.Comic;
 import com.lufficc.ishuhui.service.DownloadService;
 import com.lufficc.ishuhui.utils.JsonUtil;
 import com.lufficc.ishuhui.utils.PtrUtil;
@@ -36,10 +37,12 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
 
     private ChapterListAdapter adapter;
     private Context context;
+    private Comic comic;
 
-    public ChapterListViewHolderProvider(Context context, ChapterListAdapter adapter) {
+    public ChapterListViewHolderProvider(Context context, ChapterListAdapter adapter, Comic comic) {
         this.context = context;
         this.adapter = adapter;
+        this.comic = comic;
     }
 
     @Override
@@ -123,7 +126,7 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
     }
 
     private void download(Chapter chapter) {
-        DownloadService.startActionDownload(context,chapter);
+        DownloadService.startActionDownload(context, comic, chapter);
         Toast.makeText(context, chapter.Title + "已加入下载队列", Toast.LENGTH_SHORT).show();
     }
 }

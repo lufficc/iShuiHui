@@ -4,6 +4,7 @@ import android.app.Application;
 import android.util.TypedValue;
 
 import com.lufficc.ishuhui.R;
+import com.lufficc.ishuhui.manager.Orm;
 
 
 /**

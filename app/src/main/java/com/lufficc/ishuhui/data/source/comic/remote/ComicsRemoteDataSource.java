@@ -117,7 +117,6 @@ public class ComicsRemoteDataSource implements ComicsDataSource {
                             }
                         }
                     });
-                    return;
                 } catch (final IOException e) {
                     mHandler.post(new Runnable() {
                         @Override

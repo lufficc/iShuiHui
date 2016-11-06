@@ -5,6 +5,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.litesuits.orm.db.assit.QueryBuilder;
+import com.litesuits.orm.db.model.ConflictAlgorithm;
 import com.lufficc.ishuhui.data.source.file.FilesDataSource;
 import com.lufficc.ishuhui.manager.Orm;
 import com.lufficc.ishuhui.model.FileEntry;
@@ -78,8 +79,8 @@ public class FilesLocalDataSource implements FilesDataSource {
     }
 
     @Override
-    public void saveFile(FileEntry file) {
-
+    public long saveFile(FileEntry file) {
+        return Orm.getLiteOrm().insert(file, ConflictAlgorithm.Replace);
     }
 
     @Override
@@ -87,7 +88,7 @@ public class FilesLocalDataSource implements FilesDataSource {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                Orm.getLiteOrm().save(files);
+                Orm.getLiteOrm().insert(files, ConflictAlgorithm.Replace);
             }
         });
     }

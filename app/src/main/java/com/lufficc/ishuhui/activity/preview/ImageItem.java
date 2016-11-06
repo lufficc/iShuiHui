@@ -10,6 +10,16 @@ public class ImageItem implements Serializable {
     private String url;
     private String title;
 
+    public String getLocalPath() {
+        return localPath;
+    }
+
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
+    }
+
+    private String localPath;
+
     public ImageItem(String url, String title) {
         this.url = url;
         this.title = title;

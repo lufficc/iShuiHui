@@ -116,7 +116,7 @@ public class User {
                 .remove(USER_KEY_EMAIL)
                 .remove(USER_KEY_ID)
                 .remove(USER_KEY_NICKNAME)
-                .commit();
+                .apply();
         EventBus.getDefault().post(new EventLogout());
     }
 

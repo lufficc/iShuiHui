@@ -42,7 +42,7 @@ public class ChapterListAdapter extends LightAdapter implements FilesDataSource.
     public ChapterListAdapter(final Context context, final @Nullable Comic comic) {
         this.context = context;
         this.comic = comic;
-        register(Chapter.class, new ChapterListViewHolderProvider(context,this));
+        register(Chapter.class, new ChapterListViewHolderProvider(context, this, comic));
         register(HeaderViewProvider.Header.class, new HeaderViewProvider());
         register(LoadMoreFooterModel.class, new LoadMoreFooterViewHolderProvider());
         addFooter(loadMoreFooterModel = new LoadMoreFooterModel());
@@ -74,7 +74,9 @@ public class ChapterListAdapter extends LightAdapter implements FilesDataSource.
                 fileEntry.setComicName(comic.Title);
                 fileEntry.setChapterName(currentChapter.Title);
             }
-            list.add(new ImageItem(fileEntry.getUrl(), fileEntry.getTitle()));
+            ImageItem imageItem = new ImageItem(fileEntry.getUrl(), fileEntry.getTitle());
+            imageItem.setLocalPath(fileEntry.getLocalPath());
+            list.add(imageItem);
         }
         if (comic != null) {
             FilesRepository.getInstance().saveFiles(files);
@@ -83,10 +85,9 @@ public class ChapterListAdapter extends LightAdapter implements FilesDataSource.
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
-        if(!list.isEmpty()){
+        if (!list.isEmpty()) {
             ImagesActivity.showImages(context, list);
-        }
-        else{
+        } else {
             onLoadedFailed();
         }
 

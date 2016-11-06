@@ -1,5 +1,9 @@
 package com.lufficc.ishuhui.utils;
 
+import android.os.Environment;
+
+import java.io.File;
+
 /**
  * Created by lufficc on 2016/11/5.
  */
@@ -15,5 +19,10 @@ public class AppUtils {
 
     public static boolean isChapterImagesDownloaded(String chapterId) {
         return PtrUtil.getInstance().getBoolean("chapter_" + chapterId + "_is_downloaded", false);
+    }
+
+    public static File getAppDir(){
+        File sdCardRoot = Environment.getExternalStorageDirectory();
+        return new File(sdCardRoot, File.separator + "鼠绘漫画" + File.separator );
     }
 }

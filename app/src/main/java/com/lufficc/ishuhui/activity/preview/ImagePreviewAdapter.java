@@ -3,6 +3,7 @@ package com.lufficc.ishuhui.activity.preview;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -68,15 +68,32 @@ public class ImagePreviewAdapter extends PagerAdapter implements PhotoViewAttach
         View view = LayoutInflater.from(context).inflate(R.layout.item_image, container, false);
         final ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         final PhotoView imageView = (PhotoView) view.findViewById(R.id.photoView);
-        ImageItem imageItem = imageItemList.get(position);
+        final ImageItem imageItem = imageItemList.get(position);
         imageView.setOnPhotoTapListener(this);
+        final String finalPath = imageItem.getLocalPath() == null ? imageItem.getUrl() : imageItem.getLocalPath();
+        Log.i("ImagePreviewAdapter", finalPath);
         Glide.with(imageView.getContext())
-                .load(imageItem.getUrl())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .load(finalPath)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        progressBar.setVisibility(View.GONE);
+                        Log.i("ImagePreviewAdapter", e.toString()+", try "+imageItem.getUrl());
+                        Glide.with(imageView.getContext())
+                                .load(imageItem.getUrl())
+                                .listener(new RequestListener<String, GlideDrawable>() {
+                                    @Override
+                                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                        progressBar.setVisibility(View.GONE);
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                        progressBar.setVisibility(View.GONE);
+                                        return false;
+                                    }
+                                }).into(imageView);
+
                         return false;
                     }
 

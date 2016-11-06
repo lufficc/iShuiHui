@@ -34,7 +34,7 @@ public interface FilesDataSource {
 
     void getFile(@NonNull String fileId, @NonNull GetFileCallback callback);
 
-    void saveFile(FileEntry file);
+    long saveFile(FileEntry file);
 
     void saveFiles(List<FileEntry> files);
 
