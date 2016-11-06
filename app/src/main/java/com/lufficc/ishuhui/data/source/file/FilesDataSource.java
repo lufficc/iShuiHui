@@ -1,6 +1,7 @@
 package com.lufficc.ishuhui.data.source.file;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 
 import com.lufficc.ishuhui.model.FileEntry;
 
@@ -25,6 +26,9 @@ public interface FilesDataSource {
     }
 
     void refresh(String chapterId);
+
+    @WorkerThread
+    List<FileEntry> getFiles(String chapterId);
 
     void getFiles(String chapterId, @NonNull LoadFilesCallback callback);
 

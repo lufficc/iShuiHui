@@ -1,7 +1,10 @@
 package com.lufficc.ishuhui.adapter.viewholder;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lufficc.ishuhui.R;
@@ -16,6 +20,7 @@ import com.lufficc.ishuhui.activity.WebActivity;
 import com.lufficc.ishuhui.adapter.ChapterListAdapter;
 import com.lufficc.ishuhui.manager.ChapterListManager;
 import com.lufficc.ishuhui.model.Chapter;
+import com.lufficc.ishuhui.service.DownloadService;
 import com.lufficc.ishuhui.utils.JsonUtil;
 import com.lufficc.ishuhui.utils.PtrUtil;
 import com.lufficc.lightadapter.ViewHolderProvider;
@@ -28,11 +33,14 @@ import butterknife.ButterKnife;
  */
 
 public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, ChapterListViewHolderProvider.ViewHolder> {
-    public ChapterListViewHolderProvider(ChapterListAdapter adapter) {
-        this.adapter = adapter;
-    }
 
     private ChapterListAdapter adapter;
+    private Context context;
+
+    public ChapterListViewHolderProvider(Context context, ChapterListAdapter adapter) {
+        this.context = context;
+        this.adapter = adapter;
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull LayoutInflater layoutInflater, @NonNull ViewGroup parent) {
@@ -61,7 +69,7 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
         Button chapter_view;
 
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
@@ -76,6 +84,13 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
                     .centerCrop()
                     .placeholder(R.color.gray)
                     .into(chapter_icon);
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    buildDialog(data);
+                    return true;
+                }
+            });
             chapter_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -88,5 +103,27 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
                 }
             });
         }
+    }
+
+    private void buildDialog(final Chapter chapter) {
+        new AlertDialog
+                .Builder(context)
+                .setItems(new String[]{"下载"}, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                download(chapter);
+                                break;
+                        }
+                    }
+                })
+                .create()
+                .show();
+    }
+
+    private void download(Chapter chapter) {
+        DownloadService.startActionDownload(context,chapter);
+        Toast.makeText(context, chapter.Title + "已加入下载队列", Toast.LENGTH_SHORT).show();
     }
 }

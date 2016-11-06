@@ -46,6 +46,15 @@ public class FilesRepository implements FilesDataSource {
     }
 
     @Override
+    public List<FileEntry> getFiles(String chapterId) {
+        List<FileEntry> fileEntries = localDataSource.getFiles(chapterId);
+        if(fileEntries == null){
+            fileEntries = remoteDataSource.getFiles(chapterId);
+        }
+        return fileEntries;
+    }
+
+    @Override
     public void getFiles(final String chapterId, @NonNull final LoadFilesCallback callback) {
         if (!(dirties.containsKey(chapterId) && dirties.get(chapterId))) {
             List<FileEntry> fileEntries = fileEntryMap.get(chapterId);

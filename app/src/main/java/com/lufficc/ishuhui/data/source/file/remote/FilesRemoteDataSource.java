@@ -50,6 +50,30 @@ public class FilesRemoteDataSource implements FilesDataSource {
     }
 
     @Override
+    public List<FileEntry> getFiles(String chapterId) {
+        List<FileEntry> fileEntries = null;
+        try {
+            fileEntries = new ArrayList<>();
+            Document document = Jsoup.connect(AppUtils.getChapterUrl(chapterId)).get();
+            Elements images = document.getElementsByTag("img");
+            int i = 1;
+            for (Element img : images) {
+                String src = img.attr("src");
+                FileEntry fileEntry = new FileEntry();
+                fileEntry.setTitle(String.valueOf(i));
+                fileEntry.setUrl(src);
+                fileEntry.setChapterId(chapterId);
+                fileEntries.add(fileEntry);
+                i++;
+            }
+            return fileEntries;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fileEntries;
+    }
+
+    @Override
     public void getFiles(String chapterId, @NonNull LoadFilesCallback callback) {
         executorService.execute(new GetChapterImagesTask(chapterId, callback));
     }
@@ -73,41 +97,22 @@ public class FilesRemoteDataSource implements FilesDataSource {
         private String chapterId;
         private LoadFilesCallback callback;
 
-        public GetChapterImagesTask(String chapterId, LoadFilesCallback callback) {
+        GetChapterImagesTask(String chapterId, LoadFilesCallback callback) {
             this.chapterId = chapterId;
             this.callback = callback;
         }
 
         @Override
         public void run() {
-            try {
-                Document document = Jsoup.connect(AppUtils.getChapterUrl(chapterId)).get();
-                Elements images = document.getElementsByTag("img");
-                int i = 1;
-                final List<FileEntry> fileEntries = new ArrayList<>();
-                for (Element img : images) {
-                    String src = img.attr("src");
-                    FileEntry fileEntry = new FileEntry();
-                    fileEntry.setTitle(String.valueOf(i));
-                    fileEntry.setUrl(src);
-                    fileEntry.setChapterId(chapterId);
-                    fileEntries.add(fileEntry);
-                    i++;
-                }
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onFileLoaded(fileEntries);
-                    }
-                });
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            final List<FileEntry> fileEntries = getFiles(chapterId);
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onLoadedFailed();
+                    if (fileEntries == null) {
+                        callback.onLoadedFailed();
+                    } else {
+                        callback.onFileLoaded(fileEntries);
+                    }
                 }
             });
         }

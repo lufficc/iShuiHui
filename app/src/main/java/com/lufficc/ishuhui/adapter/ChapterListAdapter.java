@@ -42,7 +42,7 @@ public class ChapterListAdapter extends LightAdapter implements FilesDataSource.
     public ChapterListAdapter(final Context context, final @Nullable Comic comic) {
         this.context = context;
         this.comic = comic;
-        register(Chapter.class, new ChapterListViewHolderProvider(this));
+        register(Chapter.class, new ChapterListViewHolderProvider(context,this));
         register(HeaderViewProvider.Header.class, new HeaderViewProvider());
         register(LoadMoreFooterModel.class, new LoadMoreFooterViewHolderProvider());
         addFooter(loadMoreFooterModel = new LoadMoreFooterModel());

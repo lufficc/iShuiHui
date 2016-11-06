@@ -44,15 +44,19 @@ public class FilesLocalDataSource implements FilesDataSource {
     }
 
     @Override
+    public List<FileEntry> getFiles(String chapterId) {
+        QueryBuilder<FileEntry> queryBuilder = new QueryBuilder<>(FileEntry.class)
+                .where("chapterId = ? ", chapterId)
+                .appendOrderAscBy("title");
+        return Orm.getLiteOrm().query(queryBuilder);
+    }
+
+    @Override
     public void getFiles(final String chapterId, @NonNull final LoadFilesCallback callback) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                QueryBuilder<FileEntry> queryBuilder = new QueryBuilder<>(FileEntry.class)
-                        .where("chapterId = ? ", chapterId)
-                        .appendOrderAscBy("title");
-                final List<FileEntry> fileEntries = Orm.getLiteOrm().query(queryBuilder);
-
+                final List<FileEntry> fileEntries = getFiles(chapterId);
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
