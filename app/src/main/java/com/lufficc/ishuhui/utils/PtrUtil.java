@@ -109,6 +109,9 @@ public class PtrUtil {
         public boolean commit() {
             return editor.commit();
         }
+        public void apply(){
+            editor.apply();
+        }
     }
 
 }

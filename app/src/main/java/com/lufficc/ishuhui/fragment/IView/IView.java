@@ -9,5 +9,5 @@ import retrofit2.Call;
 public interface IView<Result> {
     void onSuccess(Result result);
 
-    void onFailure(Call call, Throwable e);
+    void onFailure(Throwable e);
 }

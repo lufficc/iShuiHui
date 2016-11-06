@@ -3,7 +3,7 @@ package com.lufficc.ishuhui.api;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.lufficc.ishuhui.model.ChapterListModel;
-import com.lufficc.ishuhui.model.ComicModel;
+import com.lufficc.ishuhui.model.ComicsModel;
 import com.lufficc.ishuhui.model.LoginModel;
 import com.lufficc.ishuhui.model.RegisterModel;
 
@@ -18,13 +18,18 @@ import retrofit2.http.Query;
 
 public interface Api {
     @GET("/ComicBooks/GetAllBook")
-    Call<ComicModel> getComic(
+    Call<ComicsModel> getComics(
             @Query("ClassifyId") String classify,
             @Query("PageIndex") int page);
 
     @GET("/ComicBooks/GetChapterList")
     Call<ChapterListModel> getComicChapters(
             @Query("id") String id,
+            @Query("PageIndex") int page);
+
+    @GET("/ComicBooks/GetLastChapterForBookIds")
+    Call<ChapterListModel> getLateComicChapters(
+            @Query("idJson") String ids,
             @Query("PageIndex") int page);
 
     @POST("/Subscribe")
@@ -47,11 +52,11 @@ public interface Api {
             @Query("FromType") String fromType);
 
     @GET("/ComicBooks/GetSubscribe")
-    Call<ComicModel> getSubscribedComics();
+    Call<ComicsModel> getSubscribedComics();
 
 
     @POST("/ComicBooks/GetAllBook")
-    Call<ComicModel> search(@Query("Title") String keyword);
+    Call<ComicsModel> search(@Query("Title") String keyword);
 
     @GET("/ComicBooks/GetHotKeyword")
     Call<JsonArray> hotWord();

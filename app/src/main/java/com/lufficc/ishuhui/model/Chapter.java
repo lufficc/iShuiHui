@@ -1,13 +1,18 @@
 package com.lufficc.ishuhui.model;
 
+import com.orm.dsl.Ignore;
+import com.orm.dsl.Table;
+
 import java.io.Serializable;
 
 /**
  * Created by lufficc on 2016/8/25.
  */
-
-public class Chapter implements Serializable{
+@Table
+public class Chapter implements Serializable {
+    @Ignore
     public String Id;
+
     public String Title;
     public String FrontCover;
     public String Sort;
@@ -21,4 +26,10 @@ public class Chapter implements Serializable{
     public int Reel;
     public int ChapterType;
     public String CreateTime;
+
+    public Long getId() {
+        return id;
+    }
+    public Long id;
+    public int page;
 }

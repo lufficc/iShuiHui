@@ -10,14 +10,15 @@ import com.lufficc.ishuhui.R;
 import com.lufficc.ishuhui.adapter.ComicAdapter;
 import com.lufficc.ishuhui.fragment.IView.IView;
 import com.lufficc.ishuhui.fragment.presenter.CategoryFragmentPresenter;
-import com.lufficc.ishuhui.model.ComicModel;
+import com.lufficc.ishuhui.model.Comic;
 import com.lufficc.lightadapter.LoadMoreFooterModel;
 import com.lufficc.stateLayout.StateLayout;
 
-import butterknife.BindView;
-import retrofit2.Call;
+import java.util.List;
 
-public class CategoryFragment extends BaseFragment implements IView<ComicModel>, SwipeRefreshLayout.OnRefreshListener, LoadMoreFooterModel.LoadMoreListener {
+import butterknife.BindView;
+
+public class CategoryFragment extends BaseFragment implements IView<List<Comic>>, SwipeRefreshLayout.OnRefreshListener, LoadMoreFooterModel.LoadMoreListener {
     private static final String CLASSIFY_ID = "CLASSIFY_ID";
 
     //ClassifyId   分类标识，0热血，1国产，2同人，3鼠绘
@@ -117,22 +118,22 @@ public class CategoryFragment extends BaseFragment implements IView<ComicModel>,
     }
 
     @Override
-    public void onSuccess(ComicModel comicModel) {
+    public void onSuccess(List<Comic> comics) {
         stateLayout.showContentView();
-        if (comicModel.Return.List.isEmpty()) {
+        if (comics.isEmpty()) {
             loadMoreFooterModel.noMoreData();
         } else {
             if (PageIndex == 0) {
-                adapter.setData(comicModel.Return.List);
+                adapter.setData(comics);
             } else {
-                adapter.addData(comicModel.Return.List);
+                adapter.addData(comics);
             }
         }
         swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
-    public void onFailure(Call call, Throwable e) {
+    public void onFailure(Throwable e) {
         if (adapter.getData().isEmpty()) {
             stateLayout.showErrorView(e.getMessage());
         } else {
@@ -142,6 +143,7 @@ public class CategoryFragment extends BaseFragment implements IView<ComicModel>,
 
     @Override
     public void onRefresh() {
+        presenter.refresh(classifyId);
         loadMoreFooterModel.canLoadMore();
         prevPage = PageIndex;
         PageIndex = 0;

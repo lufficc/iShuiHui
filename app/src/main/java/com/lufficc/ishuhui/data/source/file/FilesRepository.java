@@ -1,11 +1,10 @@
-package com.lufficc.ishuhui.data.source;
+package com.lufficc.ishuhui.data.source.file;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.lufficc.ishuhui.data.source.local.FilesLocalDataSource;
-import com.lufficc.ishuhui.data.source.remote.FilesRemoteDataSource;
+import com.lufficc.ishuhui.data.source.file.local.FilesLocalDataSource;
+import com.lufficc.ishuhui.data.source.file.remote.FilesRemoteDataSource;
 import com.lufficc.ishuhui.model.FileEntry;
 
 import java.util.LinkedHashMap;
@@ -24,20 +23,20 @@ public class FilesRepository implements FilesDataSource {
     private FilesRemoteDataSource remoteDataSource;
     private Map<String, List<FileEntry>> fileEntryMap = new LinkedHashMap<>();
 
-    public static FilesRepository getInstance(@NonNull Context context) {
+    public static FilesRepository getInstance() {
         if (INSTANCE == null) {
             synchronized (FilesLocalDataSource.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new FilesRepository(context);
+                    INSTANCE = new FilesRepository();
                 }
             }
         }
         return INSTANCE;
     }
 
-    private FilesRepository(@NonNull Context context) {
-        localDataSource = FilesLocalDataSource.getInstance(context);
-        remoteDataSource = FilesRemoteDataSource.getInstance(context);
+    private FilesRepository() {
+        localDataSource = FilesLocalDataSource.getInstance();
+        remoteDataSource = FilesRemoteDataSource.getInstance();
     }
 
     @Override
@@ -45,7 +44,7 @@ public class FilesRepository implements FilesDataSource {
         if (!isDirty) {
             List<FileEntry> fileEntries = fileEntryMap.get(chapterId);
             if (fileEntries != null) {
-                Log.i("main","in memory cache");
+                Log.i("main", "in memory cache");
                 callback.onFileLoaded(fileEntries);
                 return;
             }
@@ -53,7 +52,7 @@ public class FilesRepository implements FilesDataSource {
         localDataSource.getFiles(chapterId, new LoadFilesCallback() {
             @Override
             public void onFileLoaded(List<FileEntry> files) {
-                Log.i("main","localDataSource");
+                Log.i("main", "localDataSource");
                 fileEntryMap.put(chapterId, files);
                 callback.onFileLoaded(files);
             }
@@ -64,7 +63,7 @@ public class FilesRepository implements FilesDataSource {
                     @Override
                     public void onFileLoaded(List<FileEntry> files) {
                         fileEntryMap.put(chapterId, files);
-                        Log.i("main","remoteDataSource");
+                        Log.i("main", "remoteDataSource");
                         callback.onFileLoaded(files);
                     }
 

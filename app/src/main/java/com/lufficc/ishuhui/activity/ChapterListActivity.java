@@ -24,7 +24,6 @@ import com.lufficc.ishuhui.adapter.viewholder.HeaderViewProvider;
 import com.lufficc.ishuhui.constants.API;
 import com.lufficc.ishuhui.manager.ChapterListManager;
 import com.lufficc.ishuhui.model.Chapter;
-import com.lufficc.ishuhui.model.ChapterListModel;
 import com.lufficc.ishuhui.model.Comic;
 import com.lufficc.ishuhui.model.User;
 import com.lufficc.ishuhui.utils.JsonUtil;
@@ -33,6 +32,8 @@ import com.lufficc.ishuhui.utils.SubscribeUtil;
 import com.lufficc.ishuhui.widget.DefaultItemDecoration;
 import com.lufficc.lightadapter.LoadMoreFooterModel;
 import com.lufficc.stateLayout.StateLayout;
+
+import java.util.List;
 
 import butterknife.BindView;
 
@@ -239,20 +240,21 @@ public class ChapterListActivity extends BaseActivity implements
 
     @Override
     public void onRefresh() {
+        chapterListPresenter.refresh(String.valueOf(bookId));
         footerModel.canLoadMore();
         PageIndex = 0;
         getData();
     }
 
     @Override
-    public void onSuccess(ChapterListModel model) {
-        if (model.Return.List.isEmpty()) {
+    public void onSuccess(List<Chapter> chapters) {
+        if (chapters.isEmpty()) {
             footerModel.noMoreData();
         } else {
             if (PageIndex == 0) {
-                adapter.setData(model.Return.List);
+                adapter.setData(chapters);
             } else {
-                adapter.addData(model.Return.List);
+                adapter.addData(chapters);
             }
         }
         swipeRefreshLayout.setRefreshing(false);

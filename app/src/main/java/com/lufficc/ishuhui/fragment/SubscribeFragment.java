@@ -12,7 +12,7 @@ import com.lufficc.ishuhui.activity.LoginActivity;
 import com.lufficc.ishuhui.adapter.ComicAdapter;
 import com.lufficc.ishuhui.fragment.IView.IView;
 import com.lufficc.ishuhui.fragment.presenter.SubscribeFragmentPresenter;
-import com.lufficc.ishuhui.model.ComicModel;
+import com.lufficc.ishuhui.model.ComicsModel;
 import com.lufficc.ishuhui.model.User;
 import com.lufficc.lightadapter.LoadMoreFooterModel;
 import com.lufficc.stateLayout.StateLayout;
@@ -24,7 +24,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.BindView;
 import retrofit2.Call;
 
-public class SubscribeFragment extends BaseFragment implements IView<ComicModel>, SwipeRefreshLayout.OnRefreshListener {
+public class SubscribeFragment extends BaseFragment implements IView<ComicsModel>, SwipeRefreshLayout.OnRefreshListener {
 
     ComicAdapter adapter;
     LoadMoreFooterModel footerModel;
@@ -109,12 +109,12 @@ public class SubscribeFragment extends BaseFragment implements IView<ComicModel>
     }
 
     @Override
-    public void onSuccess(ComicModel comicModel) {
+    public void onSuccess(ComicsModel comicsModel) {
         stateLayout.showContentView();
-        if (comicModel.Return.List.isEmpty()) {
+        if (comicsModel.Return.List.isEmpty()) {
             stateLayout.showEmptyView("您啥也没订阅");
         } else {
-            adapter.setData(comicModel.Return.List);
+            adapter.setData(comicsModel.Return.List);
         }
         swipeRefreshLayout.setRefreshing(false);
     }
@@ -137,7 +137,7 @@ public class SubscribeFragment extends BaseFragment implements IView<ComicModel>
     }
 
     @Override
-    public void onFailure(Call call, Throwable e) {
+    public void onFailure(Throwable e) {
         if (adapter.isDataEmpty()) {
             stateLayout.showErrorView(e.getMessage());
         } else {

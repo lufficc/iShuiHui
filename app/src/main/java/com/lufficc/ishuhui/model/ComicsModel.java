@@ -24,7 +24,7 @@ import java.util.ArrayList;
  * Copyright : 0
  * Sort : 13
  */
-public class ComicModel {
+public class ComicsModel {
     public String ErrCode;
     public String ErrMsg;
     public String Costtime;

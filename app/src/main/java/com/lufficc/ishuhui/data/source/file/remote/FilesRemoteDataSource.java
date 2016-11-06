@@ -1,12 +1,11 @@
-package com.lufficc.ishuhui.data.source.remote;
+package com.lufficc.ishuhui.data.source.file.remote;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
-import com.lufficc.ishuhui.data.source.FilesDataSource;
-import com.lufficc.ishuhui.data.source.local.FilesLocalDataSource;
+import com.lufficc.ishuhui.data.source.file.FilesDataSource;
+import com.lufficc.ishuhui.data.source.file.local.FilesLocalDataSource;
 import com.lufficc.ishuhui.model.FileEntry;
 import com.lufficc.ishuhui.utils.AppUtils;
 
@@ -31,7 +30,10 @@ public class FilesRemoteDataSource implements FilesDataSource {
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
-    public static FilesRemoteDataSource getInstance(@NonNull Context context) {
+    private FilesRemoteDataSource() {
+    }
+
+    public static FilesRemoteDataSource getInstance() {
         if (INSTANCE == null) {
             synchronized (FilesLocalDataSource.class) {
                 if (INSTANCE == null) {

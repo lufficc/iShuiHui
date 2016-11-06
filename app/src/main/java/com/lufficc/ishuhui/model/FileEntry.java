@@ -1,10 +1,22 @@
 package com.lufficc.ishuhui.model;
 
+
+import com.orm.dsl.Table;
+
 /**
  * Created by lufficc on 2016/11/5.
  */
-
+@Table
 public class FileEntry {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    private Long id;
     private String fileId;
     private String url;
     private String title;

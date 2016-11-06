@@ -10,7 +10,7 @@ import android.view.View;
 import com.lufficc.ishuhui.R;
 import com.lufficc.ishuhui.adapter.ComicAdapter;
 import com.lufficc.ishuhui.model.Comic;
-import com.lufficc.ishuhui.model.ComicModel;
+import com.lufficc.ishuhui.model.ComicsModel;
 import com.lufficc.ishuhui.manager.RetrofitManager;
 import com.lufficc.lightadapter.LoadMoreFooterModel;
 import com.lufficc.stateLayout.StateLayout;
@@ -82,9 +82,9 @@ public class SearchFragment extends BaseFragment {
     private void getData() {
         stateLayout.showProgressView();
         RetrofitManager.api().search(keyword)
-                .enqueue(new Callback<ComicModel>() {
+                .enqueue(new Callback<ComicsModel>() {
                     @Override
-                    public void onResponse(Call<ComicModel> call, Response<ComicModel> response) {
+                    public void onResponse(Call<ComicsModel> call, Response<ComicsModel> response) {
                         footerModel.noMoreData();
                         if (response.isSuccessful()) {
                             List<Comic> comics = response.body().Return.List;
@@ -103,7 +103,7 @@ public class SearchFragment extends BaseFragment {
                     }
 
                     @Override
-                    public void onFailure(Call<ComicModel> call, Throwable t) {
+                    public void onFailure(Call<ComicsModel> call, Throwable t) {
                         footerModel.noMoreData();
                         toast(t.getMessage());
                         stateLayout.showErrorView(t.getMessage());
