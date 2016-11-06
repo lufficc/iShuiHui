@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="@drawable/blue_bg"
+            android:background="#50000000"
             android:ellipsize="end"
             android:gravity="end"
             android:maxLines="1"

@@ -8,11 +8,11 @@ import com.lufficc.ishuhui.data.source.chapter.ChaptersDataSource;
 import com.lufficc.ishuhui.manager.RetrofitManager;
 import com.lufficc.ishuhui.model.Chapter;
 import com.lufficc.ishuhui.model.ChapterListModel;
+import com.lufficc.ishuhui.utils.AppUtils;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by lufficc on 2016/11/5.
@@ -22,7 +22,7 @@ public class ChaptersRemoteDataSource implements ChaptersDataSource {
     private static ChaptersRemoteDataSource INSTANCE;
 
     private Handler mHandler = new Handler(Looper.getMainLooper());
-    private ExecutorService executorService = Executors.newCachedThreadPool();
+    private ExecutorService executorService = AppUtils.getExecutorService();
 
     private ChaptersRemoteDataSource() {
     }

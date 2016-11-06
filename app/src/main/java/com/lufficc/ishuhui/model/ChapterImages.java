@@ -7,6 +7,7 @@ import com.litesuits.orm.db.annotation.Table;
 import com.litesuits.orm.db.enums.AssignType;
 import com.litesuits.orm.db.enums.Relation;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,13 +15,24 @@ import java.util.List;
  * Created by lufficc on 2016/11/6.
  */
 @Table("chapter_images")
-public class ChapterImages {
+public class ChapterImages implements Serializable {
     @PrimaryKey(AssignType.BY_MYSELF)
     private String chapterId;
 
     private String comicName;
     private String comicId;
     private String chapterName;
+
+
+    public int getChapterNo() {
+        return chapterNo;
+    }
+
+    public void setChapterNo(int chapterNo) {
+        this.chapterNo = chapterNo;
+    }
+
+    private int chapterNo;
 
     @Mapping(Relation.OneToMany)
     @MapCollection(ArrayList.class)

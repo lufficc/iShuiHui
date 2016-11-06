@@ -9,15 +9,18 @@ import android.view.View;
 import com.lufficc.ishuhui.R;
 import com.lufficc.ishuhui.activity.preview.ImagesActivity;
 import com.lufficc.ishuhui.adapter.ChapterImagesAdapter;
-import com.lufficc.ishuhui.manager.Orm;
+import com.lufficc.ishuhui.data.source.chapter.images.ChapterImagesDataSource;
+import com.lufficc.ishuhui.data.source.chapter.images.ChapterImagesRepository;
 import com.lufficc.ishuhui.model.ChapterImages;
 import com.lufficc.ishuhui.utils.AppUtils;
 import com.lufficc.lightadapter.OnDataClickListener;
 import com.lufficc.stateLayout.StateLayout;
 
+import java.util.List;
+
 import butterknife.BindView;
 
-public class ChapterImagesFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, OnDataClickListener {
+public class ChapterImagesFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, OnDataClickListener, ChapterImagesDataSource.LoadChapterImagesListCallback {
 
     @BindView(R.id.stateLayout)
     StateLayout stateLayout;
@@ -53,12 +56,20 @@ public class ChapterImagesFragment extends BaseFragment implements SwipeRefreshL
         adapter.setOnDataClickListener(this);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         getData();
     }
 
     private void getData() {
-        adapter.setData(Orm.getLiteOrm().cascade().query(ChapterImages.class));
-        swipeRefreshLayout.setRefreshing(false);
+        if (adapter.isDataEmpty()){
+            stateLayout.showProgressView();
+        }
+        ChapterImagesRepository.getInstance().getChapterImagesList(this);
     }
 
     @Override
@@ -77,5 +88,23 @@ public class ChapterImagesFragment extends BaseFragment implements SwipeRefreshL
     public void onDataClick(int position, Object data) {
         ChapterImages chapterImages = (ChapterImages) data;
         ImagesActivity.showImages(getActivity(), AppUtils.fileEntry2ImageItem(chapterImages.getImages()));
+    }
+
+    @Override
+    public void onLoaded(List<ChapterImages> chapterImagesList) {
+        if (chapterImagesList.isEmpty()) {
+            stateLayout.showEmptyView();
+        } else {
+            stateLayout.showContentView();
+            adapter.setData(chapterImagesList);
+        }
+
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onFailed() {
+        swipeRefreshLayout.setRefreshing(false);
+        stateLayout.showEmptyView();
     }
 }

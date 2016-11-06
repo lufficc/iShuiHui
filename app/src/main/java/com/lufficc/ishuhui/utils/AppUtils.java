@@ -8,6 +8,8 @@ import com.lufficc.ishuhui.model.FileEntry;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by lufficc on 2016/11/5.
@@ -39,5 +41,9 @@ public class AppUtils {
             list.add(imageItem);
         }
         return list;
+    }
+
+    public static ExecutorService getExecutorService() {
+        return Executors.newCachedThreadPool();
     }
 }

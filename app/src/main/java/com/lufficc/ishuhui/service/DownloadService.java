@@ -3,6 +3,7 @@ package com.lufficc.ishuhui.service;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.litesuits.orm.db.model.ConflictAlgorithm;
@@ -18,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -29,6 +31,7 @@ public class DownloadService extends IntentService {
 
     private static final String EXTRA_CHAPTER = "com.lufficc.ishuhui.service.extra.CHAPTER";
     private static final String EXTRA_COMIC = "com.lufficc.ishuhui.service.extra.COMIC";
+    private static final LinkedList<ChapterImages> DOWNLOADING_IMAGES = new LinkedList<>();
 
     public DownloadService() {
         super("Ishuhui DownloadService");
@@ -56,19 +59,48 @@ public class DownloadService extends IntentService {
         }
     }
 
+    private OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
 
+    @WorkerThread
+    private synchronized void beforeDownload(Comic comic, Chapter chapter) {
+        List<FileEntry> fileEntries = FilesRepository.getInstance().getFiles(chapter.Id);
+        ChapterImages chapterImages = new ChapterImages();
+        chapterImages.setChapterId(chapter.Id);
+        chapterImages.setChapterName(chapter.Title);
+        chapterImages.setChapterNo(chapter.ChapterNo);
+        chapterImages.setComicId(String.valueOf(comic.Id));
+        chapterImages.setComicName(comic.Title);
+        chapterImages.setImages(fileEntries);
+        long id = Orm.getLiteOrm().cascade().insert(chapterImages, ConflictAlgorithm.Replace);
+        Log.i("handleDownload", "chapterImages inserted:" + id);
+        DOWNLOADING_IMAGES.addLast(chapterImages);
+    }
+
+
+    @WorkerThread
     private void handleDownload(Comic comic, Chapter chapter) {
-
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .build();
         File dir = getChapterDir(comic, chapter);
         if (dir == null) {
             Log.i("handleDownload", "create dir failed");
             return;
         }
+        beforeDownload(comic, chapter);
+        ChapterImages chapterImages = null;
+        synchronized (this) {
+            chapterImages = DOWNLOADING_IMAGES.getFirst();
+        }
+        while (chapterImages != null) {
+            realDownload(dir, chapterImages);
+            synchronized (this) {
+                DOWNLOADING_IMAGES.removeFirst();
+                chapterImages = DOWNLOADING_IMAGES.getFirst();
+            }
+        }
+    }
 
-        Log.i("handleDownload", " start handleDownload");
-        List<FileEntry> fileEntries = FilesRepository.getInstance().getFiles(chapter.Id);
+    @WorkerThread
+    private void realDownload(File dir, ChapterImages chapterImages) {
+        List<FileEntry> fileEntries = chapterImages.getImages();
         for (FileEntry fileEntry : fileEntries) {
             if (fileEntry.getLocalPath() != null && new File(fileEntry.getLocalPath()).exists()) {
                 Log.i("handleDownload", fileEntry.getTitle() + " already exits");
@@ -92,19 +124,12 @@ public class DownloadService extends IntentService {
                 fos.close();
                 inputStream.close();
                 fileEntry.setLocalPath(image.getAbsolutePath());
-                Log.i("handleDownload", "第" + fileEntry.getTitle() + "张 downloaded: download finished.");
+                long id = Orm.getLiteOrm().insert(fileEntry, ConflictAlgorithm.Replace);
+                Log.i("handleDownload", "第" + fileEntry.getTitle() + "张 downloaded: download finished,id=" + id);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        ChapterImages chapterImages = new ChapterImages();
-        chapterImages.setChapterId(chapter.Id);
-        chapterImages.setChapterName(chapter.Title);
-        chapterImages.setComicId(String.valueOf(comic.Id));
-        chapterImages.setComicName(comic.Title);
-        chapterImages.setImages(fileEntries);
-        long id = Orm.getLiteOrm().cascade().insert(chapterImages, ConflictAlgorithm.Replace);
-        Log.i("handleDownload", chapter.Title + "download finished:" + id);
     }
 
     private File getChapterDir(Comic comic, Chapter chapter) {

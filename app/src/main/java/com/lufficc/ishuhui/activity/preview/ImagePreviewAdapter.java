@@ -3,7 +3,6 @@ package com.lufficc.ishuhui.activity.preview;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,30 +69,23 @@ public class ImagePreviewAdapter extends PagerAdapter implements PhotoViewAttach
         final PhotoView imageView = (PhotoView) view.findViewById(R.id.photoView);
         final ImageItem imageItem = imageItemList.get(position);
         imageView.setOnPhotoTapListener(this);
-        final String finalPath = imageItem.getLocalPath() == null ? imageItem.getUrl() : imageItem.getLocalPath();
-        Log.i("ImagePreviewAdapter", finalPath);
+        String first = imageItem.getLocalPath() != null ? imageItem.getLocalPath() : imageItem.getUrl();
+        loadImage(imageView, progressBar, first, imageItem.getUrl(), true);
+        container.addView(view);
+        return view;
+    }
+
+    private void loadImage(final ImageView imageView, final ProgressBar progressBar, final String first, final String second, final boolean retry) {
         Glide.with(imageView.getContext())
-                .load(finalPath)
+                .load(first)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        Log.i("ImagePreviewAdapter", e.toString()+", try "+imageItem.getUrl());
-                        Glide.with(imageView.getContext())
-                                .load(imageItem.getUrl())
-                                .listener(new RequestListener<String, GlideDrawable>() {
-                                    @Override
-                                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                        progressBar.setVisibility(View.GONE);
-                                        return false;
-                                    }
-
-                                    @Override
-                                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                        progressBar.setVisibility(View.GONE);
-                                        return false;
-                                    }
-                                }).into(imageView);
-
+                        if (retry) {
+                            loadImage(imageView, progressBar, second, first, false);
+                        } else {
+                            progressBar.setVisibility(View.GONE);
+                        }
                         return false;
                     }
 
@@ -104,10 +96,7 @@ public class ImagePreviewAdapter extends PagerAdapter implements PhotoViewAttach
                     }
                 })
                 .into(imageView);
-        container.addView(view);
-        return view;
     }
-
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {

@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by lufficc on 2016/11/5.
@@ -28,7 +27,7 @@ public class FilesRemoteDataSource implements FilesDataSource {
     private static FilesRemoteDataSource INSTANCE;
 
     private Handler mHandler = new Handler(Looper.getMainLooper());
-    private ExecutorService executorService = Executors.newCachedThreadPool();
+    private ExecutorService executorService = AppUtils.getExecutorService();
 
     private FilesRemoteDataSource() {
     }

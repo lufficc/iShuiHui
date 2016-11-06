@@ -9,10 +9,10 @@ import com.litesuits.orm.db.model.ConflictAlgorithm;
 import com.lufficc.ishuhui.data.source.file.FilesDataSource;
 import com.lufficc.ishuhui.manager.Orm;
 import com.lufficc.ishuhui.model.FileEntry;
+import com.lufficc.ishuhui.utils.AppUtils;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by lufficc on 2016/11/5.
@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 public class FilesLocalDataSource implements FilesDataSource {
     private static FilesLocalDataSource INSTANCE;
     private Handler mHandler = new Handler(Looper.getMainLooper());
-    private ExecutorService executorService = Executors.newCachedThreadPool();
+    private ExecutorService executorService = AppUtils.getExecutorService();
 
     private FilesLocalDataSource() {
 

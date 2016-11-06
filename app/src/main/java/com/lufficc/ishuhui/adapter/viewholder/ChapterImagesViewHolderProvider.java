@@ -17,7 +17,10 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.lufficc.ishuhui.R;
 import com.lufficc.ishuhui.model.ChapterImages;
+import com.lufficc.ishuhui.model.FileEntry;
 import com.lufficc.lightadapter.ViewHolderProvider;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,9 +31,7 @@ import butterknife.ButterKnife;
 
 public class ChapterImagesViewHolderProvider extends ViewHolderProvider<ChapterImages, ChapterImagesViewHolderProvider.ViewHolder> {
 
-
     private Context context;
-
 
     public ChapterImagesViewHolderProvider(Context context) {
         this.context = context;
@@ -60,11 +61,14 @@ public class ChapterImagesViewHolderProvider extends ViewHolderProvider<ChapterI
         }
 
         void onBindData(final ChapterImages data, final int position) {
-            SpannableString spannableString = new SpannableString(data.getComicName() + "-" + data.getChapterName());
+            SpannableString spannableString = new SpannableString(data.getComicName() + "-" + data.getChapterName() + "-" + data.getChapterNo());
             spannableString.setSpan(new StyleSpan(Typeface.ITALIC), 0, data.getComicName().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             spannableString.setSpan(new RelativeSizeSpan(0.75f), 0, data.getComicName().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             tv_chapterTitle.setText(spannableString);
-            Glide.with(itemView.getContext()).load(data.getImages().get(0).getLocalPath()).into(iv_image);
+            List<FileEntry> fileEntries = data.getImages();
+            if(fileEntries != null && !fileEntries.isEmpty()){
+                Glide.with(itemView.getContext()).load(fileEntries.get(0).getLocalPath()).into(iv_image);
+            }
         }
     }
 

@@ -10,13 +10,13 @@ import com.lufficc.ishuhui.data.source.file.local.FilesLocalDataSource;
 import com.lufficc.ishuhui.manager.RetrofitManager;
 import com.lufficc.ishuhui.model.Comic;
 import com.lufficc.ishuhui.model.ComicsModel;
+import com.lufficc.ishuhui.utils.AppUtils;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import retrofit2.Response;
 
@@ -28,7 +28,7 @@ public class ComicsRemoteDataSource implements ComicsDataSource {
     private static ComicsRemoteDataSource INSTANCE;
 
     private Handler mHandler = new Handler(Looper.getMainLooper());
-    private ExecutorService executorService = Executors.newCachedThreadPool();
+    private ExecutorService executorService = AppUtils.getExecutorService();
 
     private ComicsRemoteDataSource() {
     }

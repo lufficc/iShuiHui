@@ -37,7 +37,7 @@ import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 public class FirManager {
     private Retrofit retrofit;
     private static final int BUFFER_SIZE = 16 * 1024;
-    Handler handler = new Handler(Looper.getMainLooper());
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     private static final class Holder {
         private static final FirManager RIR_MANAGER = new FirManager();

@@ -8,13 +8,14 @@ import com.lufficc.ishuhui.config.App;
  */
 
 public class Orm {
+    private static final String DB_NAME = "comic.db";
     private static LiteOrm liteOrm;
 
     public static LiteOrm getLiteOrm() {
         if (liteOrm == null) {
             synchronized (Orm.class) {
                 if (liteOrm == null) {
-                    liteOrm = LiteOrm.newSingleInstance(App.getInstance(), "comic.db");
+                    liteOrm = LiteOrm.newSingleInstance(App.getInstance(), DB_NAME);
                     liteOrm.setDebugged(true);
                 }
             }

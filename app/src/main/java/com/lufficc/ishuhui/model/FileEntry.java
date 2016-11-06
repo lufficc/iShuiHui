@@ -5,11 +5,13 @@ import com.litesuits.orm.db.annotation.PrimaryKey;
 import com.litesuits.orm.db.annotation.Table;
 import com.litesuits.orm.db.enums.AssignType;
 
+import java.io.Serializable;
+
 /**
  * Created by lufficc on 2016/11/5.
  */
 @Table("file_entry")
-public class FileEntry {
+public class FileEntry implements Serializable{
     @PrimaryKey(AssignType.BY_MYSELF)
     private String url;
 
