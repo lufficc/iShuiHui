@@ -15,10 +15,11 @@ public class Orm {
             synchronized (Orm.class) {
                 if (liteOrm == null) {
                     liteOrm = LiteOrm.newSingleInstance(App.getInstance(), "comic.db");
-                    liteOrm.setDebugged(false);
+                    liteOrm.setDebugged(true);
                 }
             }
         }
         return liteOrm;
     }
+
 }

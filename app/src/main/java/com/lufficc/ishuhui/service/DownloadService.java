@@ -95,7 +95,6 @@ public class DownloadService extends IntentService {
                 Log.i("handleDownload", "第" + fileEntry.getTitle() + "张 downloaded: download finished.");
             } catch (IOException e) {
                 e.printStackTrace();
-                return;
             }
         }
         ChapterImages chapterImages = new ChapterImages();
@@ -104,7 +103,7 @@ public class DownloadService extends IntentService {
         chapterImages.setComicId(String.valueOf(comic.Id));
         chapterImages.setComicName(comic.Title);
         chapterImages.setImages(fileEntries);
-        long id = Orm.getLiteOrm().insert(chapterImages, ConflictAlgorithm.Replace);
+        long id = Orm.getLiteOrm().cascade().insert(chapterImages, ConflictAlgorithm.Replace);
         Log.i("handleDownload", chapter.Title + "download finished:" + id);
     }
 

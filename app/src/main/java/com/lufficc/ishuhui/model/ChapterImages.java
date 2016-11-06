@@ -1,11 +1,13 @@
 package com.lufficc.ishuhui.model;
 
+import com.litesuits.orm.db.annotation.MapCollection;
 import com.litesuits.orm.db.annotation.Mapping;
 import com.litesuits.orm.db.annotation.PrimaryKey;
 import com.litesuits.orm.db.annotation.Table;
 import com.litesuits.orm.db.enums.AssignType;
 import com.litesuits.orm.db.enums.Relation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +23,7 @@ public class ChapterImages {
     private String chapterName;
 
     @Mapping(Relation.OneToMany)
+    @MapCollection(ArrayList.class)
     private List<FileEntry> images;
 
     public List<FileEntry> getImages() {
