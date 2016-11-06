@@ -24,6 +24,8 @@ public interface FilesDataSource {
         void onLoadedFailed();
     }
 
+    void refresh(String chapterId);
+
     void getFiles(String chapterId, @NonNull LoadFilesCallback callback);
 
     void getFile(@NonNull String fileId, @NonNull GetFileCallback callback);

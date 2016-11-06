@@ -1,24 +1,18 @@
 package com.lufficc.ishuhui.model;
 
 
-import com.orm.dsl.Table;
+import com.litesuits.orm.db.annotation.PrimaryKey;
+import com.litesuits.orm.db.annotation.Table;
+import com.litesuits.orm.db.enums.AssignType;
 
 /**
  * Created by lufficc on 2016/11/5.
  */
-@Table
+@Table("file_entry")
 public class FileEntry {
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    private Long id;
-    private String fileId;
+    @PrimaryKey(AssignType.BY_MYSELF)
     private String url;
+
     private String title;
     private String chapterId;
     private String chapterName;
@@ -32,14 +26,6 @@ public class FileEntry {
 
     public void setChapterId(String chapterId) {
         this.chapterId = chapterId;
-    }
-
-    public String getFileId() {
-        return fileId;
-    }
-
-    public void setFileId(String fileId) {
-        this.fileId = fileId;
     }
 
     public String getUrl() {
@@ -89,6 +75,5 @@ public class FileEntry {
     public void setLocalPath(String localPath) {
         this.localPath = localPath;
     }
-
 
 }

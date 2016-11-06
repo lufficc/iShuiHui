@@ -1,18 +1,19 @@
 package com.lufficc.ishuhui.model;
 
-import com.orm.dsl.Ignore;
-import com.orm.dsl.Table;
+import com.litesuits.orm.db.annotation.PrimaryKey;
+import com.litesuits.orm.db.annotation.Table;
+import com.litesuits.orm.db.enums.AssignType;
 
 import java.io.Serializable;
 
 /**
  * Created by lufficc on 2016/8/25.
  */
-@Table
+@Table("chapters")
 public class Chapter implements Serializable {
-    @Ignore
+    @PrimaryKey(AssignType.BY_MYSELF)
     public String Id;
-
+    public int page;
     public String Title;
     public String FrontCover;
     public String Sort;
@@ -26,10 +27,4 @@ public class Chapter implements Serializable {
     public int Reel;
     public int ChapterType;
     public String CreateTime;
-
-    public Long getId() {
-        return id;
-    }
-    public Long id;
-    public int page;
 }

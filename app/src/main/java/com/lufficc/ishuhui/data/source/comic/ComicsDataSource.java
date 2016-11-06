@@ -32,12 +32,22 @@ public interface ComicsDataSource {
         void onFail();
     }
 
+    interface SubscribeComicCallback {
+        void onComicSubscribe(boolean subscribe);
+
+        void onSubscribeFailed(Throwable throwable);
+    }
+
 
     void refresh(String classifyId);
 
     int deleteAll();
 
     int delete(String comicId);
+
+    void getSubscribedComics(@NonNull LoadComicsCallback callback);
+
+    void subscribe(Comic comic, boolean subscribe, SubscribeComicCallback callback);
 
     void getComics(String classifyId, int page, @NonNull LoadComicsCallback callback);
 

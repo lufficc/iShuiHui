@@ -4,9 +4,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
+import com.litesuits.orm.db.assit.QueryBuilder;
 import com.lufficc.ishuhui.data.source.file.FilesDataSource;
+import com.lufficc.ishuhui.manager.Orm;
 import com.lufficc.ishuhui.model.FileEntry;
-import com.orm.SugarRecord;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -38,11 +39,20 @@ public class FilesLocalDataSource implements FilesDataSource {
 
 
     @Override
+    public void refresh(String chapterId) {
+
+    }
+
+    @Override
     public void getFiles(final String chapterId, @NonNull final LoadFilesCallback callback) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                final List<FileEntry> fileEntries = SugarRecord.find(FileEntry.class, "chapter_id = ?", chapterId);
+                QueryBuilder<FileEntry> queryBuilder = new QueryBuilder<>(FileEntry.class)
+                        .where("chapterId = ? ", chapterId)
+                        .appendOrderAscBy("title");
+                final List<FileEntry> fileEntries = Orm.getLiteOrm().query(queryBuilder);
+
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -70,11 +80,10 @@ public class FilesLocalDataSource implements FilesDataSource {
 
     @Override
     public void saveFiles(final List<FileEntry> files) {
-
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                SugarRecord.saveInTx(files);
+                Orm.getLiteOrm().save(files);
             }
         });
     }

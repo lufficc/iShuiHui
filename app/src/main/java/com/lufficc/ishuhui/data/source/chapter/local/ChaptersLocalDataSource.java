@@ -4,10 +4,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
+import com.litesuits.orm.LiteOrm;
+import com.litesuits.orm.db.assit.QueryBuilder;
+import com.litesuits.orm.db.assit.WhereBuilder;
+import com.litesuits.orm.db.model.ConflictAlgorithm;
 import com.lufficc.ishuhui.data.source.chapter.ChaptersDataSource;
+import com.lufficc.ishuhui.manager.Orm;
 import com.lufficc.ishuhui.model.Chapter;
-import com.orm.SugarRecord;
-import com.orm.query.Select;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -45,12 +48,12 @@ public class ChaptersLocalDataSource implements ChaptersDataSource {
 
     @Override
     public int deleteAll() {
-        return SugarRecord.deleteAll(Chapter.class);
+        return Orm.getLiteOrm().deleteAll(Chapter.class);
     }
 
     @Override
     public int delete(String comicId) {
-        return SugarRecord.deleteAll(Chapter.class, "book_id = ?", comicId);
+        return Orm.getLiteOrm().delete(new WhereBuilder(Chapter.class).where("BookId = ? ", comicId));
     }
 
     @Override
@@ -58,10 +61,11 @@ public class ChaptersLocalDataSource implements ChaptersDataSource {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                final List<Chapter> chapters = Select.from(Chapter.class)
-                        .where("book_id = ? and page = ?",new String[]{comicId, String.valueOf(page)})
-                        .orderBy("chapter_no desc")
-                        .list();
+                QueryBuilder<Chapter> queryBuilder = new QueryBuilder<>(Chapter.class)
+                        .where(" BookId = ? and page = ? ", comicId, page)
+                        .appendOrderDescBy("ChapterNo");
+                final List<Chapter> chapters = Orm.getLiteOrm().query(queryBuilder);
+
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -87,7 +91,8 @@ public class ChaptersLocalDataSource implements ChaptersDataSource {
             @Override
             public void run() {
                 chapter.page = page;
-                final long id = SugarRecord.save(chapter);
+                LiteOrm liteOrm = Orm.getLiteOrm();
+                final long id = liteOrm.insert(chapter, ConflictAlgorithm.Replace);
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -102,6 +107,7 @@ public class ChaptersLocalDataSource implements ChaptersDataSource {
         });
     }
 
+
     @Override
     public void saveChapters(final List<Chapter> chapters, final int page, final SaveChapterCallback callback) {
         executorService.execute(new Runnable() {
@@ -112,9 +118,8 @@ public class ChaptersLocalDataSource implements ChaptersDataSource {
                 try {
                     for (Chapter chapter : chapters) {
                         chapter.page = page;
+                        Orm.getLiteOrm().insert(chapter, ConflictAlgorithm.Ignore);
                     }
-
-                    SugarRecord.saveInTx(chapters);
                 } catch (Exception e) {
                     fail = true;
                 }

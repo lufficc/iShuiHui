@@ -2,49 +2,39 @@ package com.lufficc.ishuhui.activity.presenter;
 
 import android.support.annotation.NonNull;
 
-import com.google.gson.JsonObject;
 import com.lufficc.ishuhui.activity.iview.SubscribeView;
-import com.lufficc.ishuhui.manager.RetrofitManager;
-import com.lufficc.ishuhui.utils.SubscribeUtil;
-
-import retrofit2.Call;
-import retrofit2.Callback;
+import com.lufficc.ishuhui.data.source.comic.ComicsDataSource;
+import com.lufficc.ishuhui.data.source.comic.ComicsRepository;
+import com.lufficc.ishuhui.model.Comic;
 
 /**
  * Created by lufficc on 2016/8/28.
  */
 
 public class SubscribePresenter {
-    private final SubscribeView subscribeView;
-    private Call<JsonObject> subscribeCall;
+    private SubscribeView subscribeView;
 
     public SubscribePresenter(@NonNull SubscribeView subscribeView) {
         this.subscribeView = subscribeView;
     }
 
-    public void subscribe(final int bookId, final boolean isSubscribed) {
-        subscribeCall = RetrofitManager.api()
-                .subscribe(String.valueOf(bookId), String.valueOf(!isSubscribed), 2);
-        subscribeCall.enqueue(new Callback<JsonObject>() {
+    public void subscribe(final Comic comic, final boolean isSubscribed) {
+
+        ComicsRepository.getInstance().subscribe(comic, !isSubscribed, new ComicsDataSource.SubscribeComicCallback() {
             @Override
-            public void onResponse(retrofit2.Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
-                if (response.isSuccessful()) {
-                    subscribeView.onSubscribe(!isSubscribed);
-                    SubscribeUtil.subscribe(bookId, !isSubscribed);
-                } else {
-                    subscribeView.onFailSubscribe(response.message());
-                }
+            public void onComicSubscribe(boolean subscribe) {
+                subscribeView.onSubscribe(subscribe);
             }
 
             @Override
-            public void onFailure(retrofit2.Call<JsonObject> call, Throwable t) {
-                subscribeView.onFailSubscribe(t.getMessage());
+            public void onSubscribeFailed(Throwable throwable) {
+                subscribeView.onFailSubscribe(throwable.getMessage());
             }
         });
+
     }
 
     public void onDestroy() {
-        if (subscribeCall != null && !subscribeCall.isCanceled())
-            subscribeCall.cancel();
+        subscribeView = null;
     }
 }

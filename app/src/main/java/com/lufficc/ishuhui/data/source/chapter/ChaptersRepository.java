@@ -63,7 +63,6 @@ public class ChaptersRepository implements ChaptersDataSource {
                 callback.onChapterLoaded(chapters);
                 if (dirties.containsKey(comicId) && dirties.get(comicId)) {
                     dirties.put(comicId, false);
-                    delete(comicId);
                 }
                 Log.i("getChapters","remoteDataSource");
                 saveChapters(chapters, page, new SaveChapterCallback() {

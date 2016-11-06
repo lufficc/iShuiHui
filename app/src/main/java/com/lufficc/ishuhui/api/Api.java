@@ -58,7 +58,4 @@ public interface Api {
     @POST("/ComicBooks/GetAllBook")
     Call<ComicsModel> search(@Query("Title") String keyword);
 
-    @GET("/ComicBooks/GetHotKeyword")
-    Call<JsonArray> hotWord();
-
 }

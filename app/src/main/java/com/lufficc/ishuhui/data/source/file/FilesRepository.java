@@ -7,6 +7,7 @@ import com.lufficc.ishuhui.data.source.file.local.FilesLocalDataSource;
 import com.lufficc.ishuhui.data.source.file.remote.FilesRemoteDataSource;
 import com.lufficc.ishuhui.model.FileEntry;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +18,7 @@ import java.util.Map;
 
 public class FilesRepository implements FilesDataSource {
     private static FilesRepository INSTANCE;
-    private boolean isDirty = false;
-
+    private Map<String, Boolean> dirties = new HashMap<>();
     private FilesLocalDataSource localDataSource;
     private FilesRemoteDataSource remoteDataSource;
     private Map<String, List<FileEntry>> fileEntryMap = new LinkedHashMap<>();
@@ -40,8 +40,14 @@ public class FilesRepository implements FilesDataSource {
     }
 
     @Override
+    public void refresh(String chapterId) {
+        dirties.put(chapterId, true);
+        fileEntryMap.remove(chapterId);
+    }
+
+    @Override
     public void getFiles(final String chapterId, @NonNull final LoadFilesCallback callback) {
-        if (!isDirty) {
+        if (!(dirties.containsKey(chapterId) && dirties.get(chapterId))) {
             List<FileEntry> fileEntries = fileEntryMap.get(chapterId);
             if (fileEntries != null) {
                 Log.i("main", "in memory cache");

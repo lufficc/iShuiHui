@@ -115,6 +115,7 @@ public class ChapterListActivity extends BaseActivity implements
     }
 
 
+
     private void init() {
         setTitle(title);
         chapterListPresenter = new ChapterListPresenter(this);
@@ -124,6 +125,12 @@ public class ChapterListActivity extends BaseActivity implements
                 ContextCompat.getColor(this, R.color.divider),
                 getResources().getDimensionPixelSize(R.dimen.activity_vertical_margin)
         ));
+        stateLayout.setErrorAndEmptyAction(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getData();
+            }
+        });
 
         isSubscribed = SubscribeUtil.isSubscribed(bookId);
         if (isSubscribed) {
@@ -164,7 +171,7 @@ public class ChapterListActivity extends BaseActivity implements
             toast("登陆后才能订阅吆");
             return;
         }
-        subscribePresenter.subscribe(bookId, isSubscribed);
+        subscribePresenter.subscribe(comic, isSubscribed);
     }
 
     private void getData() {

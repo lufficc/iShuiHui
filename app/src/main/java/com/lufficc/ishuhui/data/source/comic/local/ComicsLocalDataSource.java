@@ -4,10 +4,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
+import com.litesuits.orm.db.assit.QueryBuilder;
+import com.litesuits.orm.db.assit.WhereBuilder;
+import com.litesuits.orm.db.model.ConflictAlgorithm;
 import com.lufficc.ishuhui.data.source.comic.ComicsDataSource;
+import com.lufficc.ishuhui.manager.Orm;
 import com.lufficc.ishuhui.model.Comic;
-import com.orm.SugarRecord;
-import com.orm.query.Select;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -45,22 +47,24 @@ public class ComicsLocalDataSource implements ComicsDataSource {
 
     @Override
     public int deleteAll() {
-        return SugarRecord.deleteAll(Comic.class);
+        return Orm.getLiteOrm().deleteAll(Comic.class);
     }
 
     @Override
     public int delete(String classifyId) {
-        return SugarRecord.deleteAll(Comic.class, "classify_id = ?", classifyId);
+        return Orm.getLiteOrm().delete(new WhereBuilder(Comic.class).where("ClassifyId = ? ", classifyId));
     }
 
     @Override
-    public void getComics(final String classifyId, final int page, @NonNull final LoadComicsCallback callback) {
+    public void getSubscribedComics(@NonNull final LoadComicsCallback callback) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                final List<Comic> comics = Select.from(Comic.class)
-                        .where("classify_id = ? and page = ?", new String[]{classifyId, String.valueOf(page)})
-                        .list();
+                QueryBuilder<Comic> queryBuilder = new QueryBuilder<>(Comic.class)
+                        .where("isSubscribe = ?", true)
+                        .appendOrderDescBy("Title");
+                final List<Comic> comics = Orm.getLiteOrm().query(queryBuilder);
+
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -71,6 +75,79 @@ public class ComicsLocalDataSource implements ComicsDataSource {
                         }
                     }
                 });
+
+            }
+        });
+    }
+
+    @Override
+    public void subscribe(final Comic comic, final boolean subscribe, final SubscribeComicCallback callback) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    comic.isSubscribe = subscribe;
+                    final long id = Orm.getLiteOrm().insert(comic, ConflictAlgorithm.Replace);
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (id > 0) {
+                                callback.onComicSubscribe(subscribe);
+                            } else {
+                                callback.onSubscribeFailed(new Exception("falied"));
+                            }
+                        }
+                    });
+                } catch (final Exception e) {
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onSubscribeFailed(e);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public void getComics(final String classifyId, final int page, @NonNull final LoadComicsCallback callback) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    QueryBuilder<Comic> queryBuilder = null;
+                    if ("0".equals(classifyId)) {
+                        queryBuilder = new QueryBuilder<>(Comic.class)
+                                .where("page = ?", page)
+                                .appendOrderDescBy("Title");
+                    } else {
+                        queryBuilder = new QueryBuilder<>(Comic.class)
+                                .where("ClassifyId = ? and page = ?", classifyId, page)
+                                .appendOrderDescBy("Title");
+                    }
+
+                    final List<Comic> comics = Orm.getLiteOrm().query(queryBuilder);
+
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (comics.isEmpty()) {
+                                callback.onComicsEmpty();
+                            } else {
+                                callback.onComicLoaded(comics);
+                            }
+                        }
+                    });
+                } catch (final Exception e) {
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onLoadedFailed(e);
+                        }
+                    });
+                }
             }
         });
     }
@@ -87,8 +164,7 @@ public class ComicsLocalDataSource implements ComicsDataSource {
             @Override
             public void run() {
                 comic.page = page;
-                SugarRecord.save(comic.LastChapter);
-                final long id = SugarRecord.save(comic);
+                final long id = Orm.getLiteOrm().insert(comic, ConflictAlgorithm.Replace);
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -103,10 +179,8 @@ public class ComicsLocalDataSource implements ComicsDataSource {
         });
     }
 
-    public static Comic findOne(String comicId) {
-        List<Comic> comics = SugarRecord.find(Comic.class, "id = ?", comicId);
-        return comics.isEmpty() ? null : comics.get(0);
-    }
+
+
 
     @Override
     public void saveComics(final List<Comic> comics, final int page, final SaveComicCallback callback) {
@@ -118,13 +192,8 @@ public class ComicsLocalDataSource implements ComicsDataSource {
                 try {
                     for (Comic comic : comics) {
                         comic.page = page;
-                        Comic old = findOne(String.valueOf(comic.Id));
-                        if (old != null) {
-                            SugarRecord.delete(old);
-                        }
-                        SugarRecord.save(comic.LastChapter);
+                        Orm.getLiteOrm().insert(comic, ConflictAlgorithm.Replace);
                     }
-                    SugarRecord.saveInTx(comics);
                 } catch (Exception e) {
                     fail = true;
                 }

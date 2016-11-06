@@ -12,7 +12,7 @@ import com.lufficc.ishuhui.activity.LoginActivity;
 import com.lufficc.ishuhui.adapter.ComicAdapter;
 import com.lufficc.ishuhui.fragment.IView.IView;
 import com.lufficc.ishuhui.fragment.presenter.SubscribeFragmentPresenter;
-import com.lufficc.ishuhui.model.ComicsModel;
+import com.lufficc.ishuhui.model.Comic;
 import com.lufficc.ishuhui.model.User;
 import com.lufficc.lightadapter.LoadMoreFooterModel;
 import com.lufficc.stateLayout.StateLayout;
@@ -21,10 +21,11 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import butterknife.BindView;
-import retrofit2.Call;
+import java.util.List;
 
-public class SubscribeFragment extends BaseFragment implements IView<ComicsModel>, SwipeRefreshLayout.OnRefreshListener {
+import butterknife.BindView;
+
+public class SubscribeFragment extends BaseFragment implements IView<List<Comic>>, SwipeRefreshLayout.OnRefreshListener {
 
     ComicAdapter adapter;
     LoadMoreFooterModel footerModel;
@@ -97,7 +98,6 @@ public class SubscribeFragment extends BaseFragment implements IView<ComicsModel
     private void getData() {
         if (adapter.isDataEmpty())
             stateLayout.showProgressView();
-
         if (checkLogin()) {
             subscribeFragmentPresenter.getSubscribedComics();
         }
@@ -109,12 +109,12 @@ public class SubscribeFragment extends BaseFragment implements IView<ComicsModel
     }
 
     @Override
-    public void onSuccess(ComicsModel comicsModel) {
+    public void onSuccess(List<Comic> comics) {
         stateLayout.showContentView();
-        if (comicsModel.Return.List.isEmpty()) {
+        if (comics.isEmpty()) {
             stateLayout.showEmptyView("您啥也没订阅");
         } else {
-            adapter.setData(comicsModel.Return.List);
+            adapter.setData(comics);
         }
         swipeRefreshLayout.setRefreshing(false);
     }
@@ -140,16 +140,13 @@ public class SubscribeFragment extends BaseFragment implements IView<ComicsModel
     public void onFailure(Throwable e) {
         if (adapter.isDataEmpty()) {
             stateLayout.showErrorView(e.getMessage());
-        } else {
-            footerModel.errorOccur("加载出错," + e.getMessage());
         }
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void onRefresh() {
-        if (adapter.isDataEmpty()) {
-            stateLayout.showProgressView();
-        }
+        subscribeFragmentPresenter.refreshSubscribedComics();
         getData();
     }
 }

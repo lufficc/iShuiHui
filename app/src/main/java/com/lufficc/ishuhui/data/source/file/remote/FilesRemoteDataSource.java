@@ -45,6 +45,11 @@ public class FilesRemoteDataSource implements FilesDataSource {
     }
 
     @Override
+    public void refresh(String chapterId) {
+
+    }
+
+    @Override
     public void getFiles(String chapterId, @NonNull LoadFilesCallback callback) {
         executorService.execute(new GetChapterImagesTask(chapterId, callback));
     }
@@ -99,7 +104,12 @@ public class FilesRemoteDataSource implements FilesDataSource {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            callback.onLoadedFailed();
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onLoadedFailed();
+                }
+            });
         }
     }
 }

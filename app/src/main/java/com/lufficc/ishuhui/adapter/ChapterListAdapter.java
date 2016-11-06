@@ -83,7 +83,13 @@ public class ChapterListAdapter extends LightAdapter implements FilesDataSource.
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
-        ImagesActivity.showImages(context, list);
+        if(!list.isEmpty()){
+            ImagesActivity.showImages(context, list);
+        }
+        else{
+            onLoadedFailed();
+        }
+
     }
 
     @Override

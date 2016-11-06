@@ -137,7 +137,7 @@ public class CategoryFragment extends BaseFragment implements IView<List<Comic>>
         if (adapter.getData().isEmpty()) {
             stateLayout.showErrorView(e.getMessage());
         } else {
-            loadMoreFooterModel.errorOccur(e.getMessage());
+            loadMoreFooterModel.errorOccur("加载出错");
         }
     }
 

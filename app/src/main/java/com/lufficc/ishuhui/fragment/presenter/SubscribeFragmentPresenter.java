@@ -2,46 +2,47 @@ package com.lufficc.ishuhui.fragment.presenter;
 
 import android.support.annotation.NonNull;
 
+import com.lufficc.ishuhui.data.source.comic.ComicsDataSource;
+import com.lufficc.ishuhui.data.source.comic.ComicsRepository;
 import com.lufficc.ishuhui.fragment.IView.IView;
-import com.lufficc.ishuhui.manager.RetrofitManager;
-import com.lufficc.ishuhui.model.ComicsModel;
+import com.lufficc.ishuhui.model.Comic;
 
-import retrofit2.Call;
-import retrofit2.Callback;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by lcc_luffy on 2016/2/1.
  */
 public class SubscribeFragmentPresenter {
-    private IView<ComicsModel> iView;
-    private Call<ComicsModel> call;
-    public SubscribeFragmentPresenter(@NonNull IView<ComicsModel> iView) {
+    private IView<List<Comic>> iView;
+    public SubscribeFragmentPresenter(@NonNull IView<List<Comic>> iView) {
         this.iView = iView;
     }
 
     public void getSubscribedComics() {
-        call = RetrofitManager.api().getSubscribedComics();
-        call.enqueue(new Callback<ComicsModel>() {
-                    @Override
-                    public void onResponse(retrofit2.Call<ComicsModel> call, retrofit2.Response<ComicsModel> response) {
-                        if (response.isSuccessful()) {
-                            iView.onSuccess(response.body());
-                        } else {
-                            iView.onFailure(new Exception(response.message()));
-                        }
-                    }
+        ComicsRepository.getInstance().getSubscribedComics(new ComicsDataSource.LoadComicsCallback() {
+            @Override
+            public void onComicLoaded(List<Comic> comics) {
+                iView.onSuccess(comics);
+            }
 
-                    @Override
-                    public void onFailure(retrofit2.Call<ComicsModel> call, Throwable t) {
-                        iView.onFailure(t);
-                    }
-                });
+            @Override
+            public void onComicsEmpty() {
+                iView.onSuccess(new ArrayList<Comic>());
+            }
+
+            @Override
+            public void onLoadedFailed(Throwable throwable) {
+                iView.onFailure(throwable);
+            }
+        });
     }
 
     public void onDestroy() {
         iView = null;
-        if (call != null && !call.isCanceled()) {
-            call.cancel();
-        }
+    }
+
+    public void refreshSubscribedComics() {
+        ComicsRepository.getInstance().refreshSubscribedComics();
     }
 }

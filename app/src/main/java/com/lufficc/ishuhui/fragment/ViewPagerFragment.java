@@ -66,6 +66,7 @@ public class ViewPagerFragment extends BaseFragment implements ViewPager.OnPageC
     }
 
     public void setCurrentFragment(int index) {
-        viewPager.setCurrentItem(index);
+        if (viewPager != null)
+            viewPager.setCurrentItem(index);
     }
 }
