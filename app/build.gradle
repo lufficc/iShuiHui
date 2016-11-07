@@ -47,7 +47,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.10.1'
 
     compile 'com.github.chrisbanes.photoview:library:1.2.4'
-    compile 'com.lzy.net:okserver:1.1.0'
+    compile 'com.github.ctiao:DanmakuFlameMaster:0.5.5'
 
     compile 'com.lufficc:stateLayout:0.1.1'
     compile 'com.lufficc:lightAdapter:0.0.7'

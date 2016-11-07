@@ -12,7 +12,6 @@ import com.lufficc.ishuhui.adapter.ChapterImagesAdapter;
 import com.lufficc.ishuhui.data.source.chapter.images.ChapterImagesDataSource;
 import com.lufficc.ishuhui.data.source.chapter.images.ChapterImagesRepository;
 import com.lufficc.ishuhui.model.ChapterImages;
-import com.lufficc.ishuhui.utils.AppUtils;
 import com.lufficc.lightadapter.OnDataClickListener;
 import com.lufficc.stateLayout.StateLayout;
 
@@ -87,7 +86,7 @@ public class ChapterImagesFragment extends BaseFragment implements SwipeRefreshL
     @Override
     public void onDataClick(int position, Object data) {
         ChapterImages chapterImages = (ChapterImages) data;
-        ImagesActivity.showImages(getActivity(), AppUtils.fileEntry2ImageItem(chapterImages.getImages()));
+        ImagesActivity.showImages(getActivity(), chapterImages.getImages());
     }
 
     @Override

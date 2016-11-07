@@ -14,6 +14,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.lufficc.ishuhui.R;
+import com.lufficc.ishuhui.model.FileEntry;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class ImagePreviewAdapter extends PagerAdapter implements PhotoViewAttacher.OnPhotoTapListener {
 
-    private List<ImageItem> imageItemList;
+    private List<FileEntry> imageItemList;
     private Context context;
     private View currentView;
 
@@ -33,7 +34,7 @@ public class ImagePreviewAdapter extends PagerAdapter implements PhotoViewAttach
 
     private PhotoViewAttacher.OnPhotoTapListener onPhotoTapListener;
 
-    public ImagePreviewAdapter(Context context, @NonNull List<ImageItem> imageItemList) {
+    public ImagePreviewAdapter(Context context, @NonNull List<FileEntry> imageItemList) {
         this.imageItemList = imageItemList;
         this.context = context;
     }
@@ -67,7 +68,7 @@ public class ImagePreviewAdapter extends PagerAdapter implements PhotoViewAttach
         View view = LayoutInflater.from(context).inflate(R.layout.item_image, container, false);
         final ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         final PhotoView imageView = (PhotoView) view.findViewById(R.id.photoView);
-        final ImageItem imageItem = imageItemList.get(position);
+        final FileEntry imageItem = imageItemList.get(position);
         imageView.setOnPhotoTapListener(this);
         String first = imageItem.getLocalPath() != null ? imageItem.getLocalPath() : imageItem.getUrl();
         loadImage(imageView, progressBar, first, imageItem.getUrl(), true);

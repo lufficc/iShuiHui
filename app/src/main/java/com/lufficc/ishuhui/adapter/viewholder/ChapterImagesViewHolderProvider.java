@@ -44,7 +44,7 @@ public class ChapterImagesViewHolderProvider extends ViewHolderProvider<ChapterI
 
     @Override
     public void onBindViewHolder(ChapterImages chapter, ViewHolder viewHolder, int position) {
-        viewHolder.onBindData(chapter, position);
+        viewHolder.onBindData(chapter);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -54,20 +54,24 @@ public class ChapterImagesViewHolderProvider extends ViewHolderProvider<ChapterI
         @BindView(R.id.tv_chapterTitle)
         TextView tv_chapterTitle;
 
+        @BindView(R.id.tv_comicTitle)
+        TextView tv_comicTitle;
 
         ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        void onBindData(final ChapterImages data, final int position) {
-            SpannableString spannableString = new SpannableString(data.getComicName() + "-" + data.getChapterName() + "-" + data.getChapterNo());
-            spannableString.setSpan(new StyleSpan(Typeface.ITALIC), 0, data.getComicName().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            spannableString.setSpan(new RelativeSizeSpan(0.75f), 0, data.getComicName().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        void onBindData(final ChapterImages data) {
+            String chapterNo = "第" + data.getChapterNo() + "话";
+            SpannableString spannableString = new SpannableString(chapterNo + " - " + data.getChapterName());
+            spannableString.setSpan(new StyleSpan(Typeface.ITALIC), 0, chapterNo.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannableString.setSpan(new RelativeSizeSpan(0.75f), 0, chapterNo.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             tv_chapterTitle.setText(spannableString);
+            tv_comicTitle.setText(data.getComicName());
             List<FileEntry> fileEntries = data.getImages();
-            if(fileEntries != null && !fileEntries.isEmpty()){
-                Glide.with(itemView.getContext()).load(fileEntries.get(0).getLocalPath()).into(iv_image);
+            if (fileEntries != null && !fileEntries.isEmpty()) {
+                Glide.with(itemView.getContext()).load(fileEntries.get(0).getLocalPath()).placeholder(R.color.black).error(R.color.black).into(iv_image);
             }
         }
     }

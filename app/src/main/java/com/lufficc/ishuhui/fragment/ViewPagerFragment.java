@@ -18,7 +18,10 @@ public class ViewPagerFragment extends BaseFragment implements ViewPager.OnPageC
     @Override
     public void initialize(@Nullable Bundle savedInstanceState) {
         super.initialize(savedInstanceState);
-        viewPager.setAdapter(new FragmentsAdapter(getChildFragmentManager()));
+        viewPager.setAdapter(new FragmentsAdapter(getChildFragmentManager()
+                , SubscribeFragment.newInstance()
+                , CategoriesFragment.newInstance()
+                , ChapterImagesFragment.newInstance()));
         viewPager.addOnPageChangeListener(this);
         viewPager.setCurrentItem(0);
     }

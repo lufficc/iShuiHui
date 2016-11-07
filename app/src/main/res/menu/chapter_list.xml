@@ -11,9 +11,6 @@
         android:orderInCategory="100"
         android:title="@string/share_link"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/action_subscribe"
-        android:orderInCategory="100"
-        android:title="@string/subscribe"/>
+
 
 </menu>

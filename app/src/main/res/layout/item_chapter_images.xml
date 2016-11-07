@@ -1,33 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/card_margin"
-    android:foreground="?attr/selectableItemBackground">
+    android:layout_height="150dp"
+    android:foreground="?attr/selectableItemBackground"
+    android:layout_marginTop="3px">
 
-    <FrameLayout
+    <ImageView
+        android:id="@+id/iv_image"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="150dp"
+        android:scaleType="centerCrop" />
 
-        <ImageView
-            android:id="@+id/iv_image"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:scaleType="centerCrop" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#40000000"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tv_chapterTitle"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="#50000000"
-            android:ellipsize="end"
-            android:gravity="end"
-            android:maxLines="1"
+            android:layout_marginTop="50dp"
+            android:gravity="center"
             android:padding="4dp"
             android:textColor="@color/white"
-            android:textSize="16sp" />
-    </FrameLayout>
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:text="第12话" />
 
-</android.support.v7.widget.CardView>
+        <TextView
+            android:id="@+id/tv_comicTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="4dp"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            tools:text="海贼王" />
+    </LinearLayout>
+
+
+</FrameLayout>

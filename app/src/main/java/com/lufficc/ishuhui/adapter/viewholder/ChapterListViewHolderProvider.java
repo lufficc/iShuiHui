@@ -94,6 +94,7 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
                     return true;
                 }
             });
+
             chapter_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

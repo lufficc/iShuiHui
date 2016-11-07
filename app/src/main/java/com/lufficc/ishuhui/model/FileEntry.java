@@ -1,6 +1,7 @@
 package com.lufficc.ishuhui.model;
 
 
+import com.litesuits.orm.db.annotation.Ignore;
 import com.litesuits.orm.db.annotation.PrimaryKey;
 import com.litesuits.orm.db.annotation.Table;
 import com.litesuits.orm.db.enums.AssignType;
@@ -11,9 +12,20 @@ import java.io.Serializable;
  * Created by lufficc on 2016/11/5.
  */
 @Table("file_entry")
-public class FileEntry implements Serializable{
+public class FileEntry implements Serializable {
     @PrimaryKey(AssignType.BY_MYSELF)
     private String url;
+
+    public boolean isDownloading() {
+        return downloading;
+    }
+
+    public void setDownloading(boolean downloading) {
+        downloading = downloading;
+    }
+
+    @Ignore
+    private boolean downloading;
 
     private String title;
     private String chapterId;

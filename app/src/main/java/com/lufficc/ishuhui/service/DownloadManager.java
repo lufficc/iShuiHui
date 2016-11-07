@@ -44,13 +44,37 @@ public class DownloadManager {
         return INSTANCE;
     }
 
-    public synchronized LinkedList<ChapterImages> getDownloadingQueue() {
+    public synchronized boolean isChapterDownloading(String chapterId) {
+        for (ChapterImages c : downloadingQueue()) {
+            if (c.getChapterId().equals(chapterId))
+                return true;
+        }
+        return false;
+    }
+
+    public synchronized boolean isFileEntryDownloading(FileEntry f) {
+        for (ChapterImages c : downloadingQueue()) {
+            if (c.getChapterId().equals(f.getChapterId())) {
+                for (FileEntry tmp : c.getImages()) {
+                    if (tmp.getUrl().equals(f.getUrl())) {
+                        f.setDownloading(true);
+                        return tmp.isDownloading();
+                    }
+                }
+                break;
+            }
+
+        }
+        return false;
+    }
+
+    private synchronized LinkedList<ChapterImages> downloadingQueue() {
         return DOWNLOADING_IMAGES;
     }
 
     private ChapterImages first() {
         try {
-            return getDownloadingQueue().getFirst();
+            return downloadingQueue().getFirst();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -59,7 +83,7 @@ public class DownloadManager {
 
     private ChapterImages removeFirst() {
         try {
-            return getDownloadingQueue().removeFirst();
+            return downloadingQueue().removeFirst();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,7 +102,7 @@ public class DownloadManager {
         chapterImages.setImages(fileEntries);
         long id = Orm.getLiteOrm().cascade().insert(chapterImages, ConflictAlgorithm.Replace);
         Log.i("handleDownload", "chapterImages inserted:" + id);
-        getDownloadingQueue().addLast(chapterImages);
+        downloadingQueue().addLast(chapterImages);
     }
 
     @WorkerThread
@@ -108,6 +132,7 @@ public class DownloadManager {
                 Log.i("handleDownload", fileEntry.getTitle() + " already exits");
                 continue;
             }
+            fileEntry.setDownloading(true);
             Request request = new Request.Builder().get().url(fileEntry.getUrl()).build();
             try {
                 Response response = okHttpClient.newCall(request).execute();
@@ -128,6 +153,7 @@ public class DownloadManager {
                 fileEntry.setLocalPath(image.getAbsolutePath());
                 long id = Orm.getLiteOrm().insert(fileEntry, ConflictAlgorithm.Replace);
                 Log.i("handleDownload", "第" + fileEntry.getTitle() + "张 downloaded: download finished,id=" + id);
+                fileEntry.setDownloading(false);
             } catch (IOException e) {
                 e.printStackTrace();
             }

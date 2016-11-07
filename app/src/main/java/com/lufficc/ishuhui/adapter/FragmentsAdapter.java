@@ -4,11 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.lufficc.ishuhui.fragment.CategoriesFragment;
-import com.lufficc.ishuhui.fragment.ChapterImagesFragment;
-import com.lufficc.ishuhui.fragment.SubscribeFragment;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,11 +15,12 @@ import java.util.List;
 public class FragmentsAdapter extends FragmentPagerAdapter {
     private List<Fragment> fragments = new ArrayList<>(3);
 
-    public FragmentsAdapter(FragmentManager fm) {
+    public FragmentsAdapter(FragmentManager fm, Fragment first, Fragment... fragments) {
         super(fm);
-        fragments.add(SubscribeFragment.newInstance());
-        fragments.add(CategoriesFragment.newInstance());
-        fragments.add(ChapterImagesFragment.newInstance());
+        this.fragments.add(first);
+        if (fragments != null) {
+            Collections.addAll(this.fragments, fragments);
+        }
     }
 
     @Override

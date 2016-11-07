@@ -5,7 +5,6 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
-import com.lufficc.ishuhui.activity.preview.ImageItem;
 import com.lufficc.ishuhui.activity.preview.ImagesActivity;
 import com.lufficc.ishuhui.adapter.viewholder.ChapterListViewHolderProvider;
 import com.lufficc.ishuhui.adapter.viewholder.HeaderViewProvider;
@@ -20,7 +19,6 @@ import com.lufficc.lightadapter.LoadMoreFooterModel;
 import com.lufficc.lightadapter.LoadMoreFooterViewHolderProvider;
 import com.lufficc.lightadapter.OnDataClickListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,16 +65,12 @@ public class ChapterListAdapter extends LightAdapter implements FilesDataSource.
 
     @Override
     public void onFileLoaded(List<FileEntry> files) {
-        final List<ImageItem> list = new ArrayList<>();
         for (FileEntry fileEntry : files) {
             if (comic != null) {
                 fileEntry.setComicId(String.valueOf(comic.Id));
                 fileEntry.setComicName(comic.Title);
                 fileEntry.setChapterName(currentChapter.Title);
             }
-            ImageItem imageItem = new ImageItem(fileEntry.getUrl(), fileEntry.getTitle());
-            imageItem.setLocalPath(fileEntry.getLocalPath());
-            list.add(imageItem);
         }
         if (comic != null) {
             FilesRepository.getInstance().saveFiles(files);
@@ -85,8 +79,8 @@ public class ChapterListAdapter extends LightAdapter implements FilesDataSource.
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
-        if (!list.isEmpty()) {
-            ImagesActivity.showImages(context, list);
+        if (!files.isEmpty()) {
+            ImagesActivity.showImages(context, files);
         } else {
             onLoadedFailed();
         }

@@ -2,12 +2,7 @@ package com.lufficc.ishuhui.utils;
 
 import android.os.Environment;
 
-import com.lufficc.ishuhui.activity.preview.ImageItem;
-import com.lufficc.ishuhui.model.FileEntry;
-
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,16 +26,6 @@ public class AppUtils {
     public static File getAppDir() {
         File sdCardRoot = Environment.getExternalStorageDirectory();
         return new File(sdCardRoot, File.separator + "鼠绘漫画" + File.separator);
-    }
-
-    public static List<ImageItem> fileEntry2ImageItem(List<FileEntry> files) {
-        final List<ImageItem> list = new ArrayList<>();
-        for (FileEntry fileEntry : files) {
-            ImageItem imageItem = new ImageItem(fileEntry.getUrl(), fileEntry.getTitle());
-            imageItem.setLocalPath(fileEntry.getLocalPath());
-            list.add(imageItem);
-        }
-        return list;
     }
 
     public static ExecutorService getExecutorService() {

@@ -1,45 +1,55 @@
 package com.lufficc.ishuhui.activity.preview;
 
-import android.animation.Animator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.util.DisplayMetrics;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lufficc.ishuhui.R;
+import com.lufficc.ishuhui.model.FileEntry;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import master.flame.danmaku.controller.IDanmakuView;
+import master.flame.danmaku.danmaku.model.BaseDanmaku;
+import master.flame.danmaku.danmaku.model.IDanmakus;
+import master.flame.danmaku.danmaku.model.IDisplayer;
+import master.flame.danmaku.danmaku.model.android.DanmakuContext;
+import master.flame.danmaku.danmaku.model.android.Danmakus;
+import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
+import master.flame.danmaku.ui.widget.DanmakuView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
-public class ImagesActivity extends Activity implements ViewTreeObserver.OnPreDrawListener, PhotoViewAttacher.OnPhotoTapListener {
+public class ImagesActivity extends Activity implements PhotoViewAttacher.OnPhotoTapListener, ViewTreeObserver.OnPreDrawListener {
     public static final String IMAGES_DATA = "IMAGES_DATA";
     public static final String CURRENT_IMAGE = "CURRENT_IMAGE";
-    private RelativeLayout rootView;
+
+
+    private View rootView;
     private ImagePreviewAdapter imagePreviewAdapter;
     private TextView tv_pager;
     private ViewPager viewPager;
-    private List<ImageItem> imageItemList;
-    private int currentImage;
-    private int imageHeight;
-    private int imageWidth;
-    private int screenWidth;
-    private int screenHeight;
+    private DanmakuView danmakuView;
+    private DanmakuContext danmakuContext;
 
-    public static void showImages(Context context, List<ImageItem> imageItemList) {
+    private List<FileEntry> imageItemList;
+    private int currentImage;
+
+
+    public static void showImages(Context context, List<FileEntry> imageItemList) {
+        if (imageItemList == null || imageItemList.isEmpty()) {
+            Toast.makeText(context, "图片列表为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Intent i = new Intent(context, ImagesActivity.class);
         i.putExtra(IMAGES_DATA, (Serializable) imageItemList);
         context.startActivity(i);
@@ -49,23 +59,25 @@ public class ImagesActivity extends Activity implements ViewTreeObserver.OnPreDr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_images);
+
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         tv_pager = (TextView) findViewById(R.id.tv_pager);
-        rootView = (RelativeLayout) findViewById(R.id.rootView);
+        rootView = findViewById(R.id.rootView);
+        danmakuView = (DanmakuView) findViewById(R.id.sv_danmaku);
 
-        DisplayMetrics metric = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metric);
-        screenWidth = metric.widthPixels;
-        screenHeight = metric.heightPixels;
+        initDanmu();
+
         Intent intent = getIntent();
-        imageItemList = (List<ImageItem>) intent.getSerializableExtra(IMAGES_DATA);
+        imageItemList = (List<FileEntry>) intent.getSerializableExtra(IMAGES_DATA);
+
+
         currentImage = intent.getIntExtra(CURRENT_IMAGE, 0);
 
         imagePreviewAdapter = new ImagePreviewAdapter(this, imageItemList);
         imagePreviewAdapter.setOnPhotoTapListener(this);
         viewPager.setAdapter(imagePreviewAdapter);
-        viewPager.setCurrentItem(currentImage);
         viewPager.getViewTreeObserver().addOnPreDrawListener(this);
+        viewPager.setCurrentItem(currentImage);
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
@@ -74,103 +86,71 @@ public class ImagesActivity extends Activity implements ViewTreeObserver.OnPreDr
             }
         });
         setCurrentPage();
+        addDanmu();
+    }
+
+    private void initDanmu() {
+        danmakuContext = DanmakuContext.create();
+        // 设置最大显示行数
+        HashMap<Integer, Integer> maxLinesPair = new HashMap<Integer, Integer>();
+        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 5); // 滚动弹幕最大显示5行
+        // 设置是否禁止重叠
+        HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<Integer, Boolean>();
+        overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
+        overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_TOP, true);
+
+        danmakuContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3)
+                .setDuplicateMergingEnabled(false)
+                .setScrollSpeedFactor(1.2f)
+                .setScaleTextSize(1.2f)
+                .setMaximumLines(maxLinesPair)
+                .preventOverlapping(overlappingEnablePair);
+
+        danmakuView.prepare(new BaseDanmakuParser() {
+            @Override
+            protected IDanmakus parse() {
+                return new Danmakus();
+            }
+        }, danmakuContext);
+        danmakuView.showFPS(true);
+        danmakuView.enableDanmakuDrawingCache(true);
+        danmakuView.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (danmakuView != null) {
+            // dont forget release!
+            danmakuView.release();
+            danmakuView = null;
+        }
+    }
+
+    private void addDanmu() {
+        Toast.makeText(this, "before", Toast.LENGTH_SHORT).show();
+        BaseDanmaku danmaku = danmakuContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
+        if (danmaku == null || danmakuView == null) {
+            return;
+        }
+        danmaku.text = "这是一条弹幕" + System.nanoTime();
+        danmaku.padding = 5;
+        danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
+        danmaku.isLive = true;
+        danmaku.setTime(danmakuView.getCurrentTime() + 1200);
+        danmaku.textSize = 25f;
+        danmaku.textColor = Color.RED;
+        danmaku.textShadowColor = Color.WHITE;
+        // danmaku.underlineColor = Color.GREEN;
+        danmaku.borderColor = Color.GREEN;
+        danmakuView.addDanmaku(danmaku);
+        Toast.makeText(this, danmaku.text, Toast.LENGTH_SHORT).show();
     }
 
     private void setCurrentPage() {
         tv_pager.setText(String.format(Locale.CHINA, "%1d/%2d", currentImage + 1, imageItemList.size()));
     }
 
-    @Override
-    public boolean onPreDraw() {
-        rootView.setBackgroundColor(Color.BLACK);
-        return true;
-    }
-
-    /**
-     * 计算图片的宽高
-     */
-    private void computeImageWidthAndHeight(ImageView imageView) {
-
-        // 获取真实大小
-        Drawable drawable = imageView.getDrawable();
-        int intrinsicHeight = drawable.getIntrinsicHeight();
-        int intrinsicWidth = drawable.getIntrinsicWidth();
-        // 计算出与屏幕的比例，用于比较以宽的比例为准还是高的比例为准，因为很多时候不是高度没充满，就是宽度没充满
-        float h = screenHeight * 1.0f / intrinsicHeight;
-        float w = screenWidth * 1.0f / intrinsicWidth;
-        if (h > w) h = w;
-        else w = h;
-
-        // 得出当宽高至少有一个充满的时候图片对应的宽高
-        imageHeight = (int) (intrinsicHeight * h);
-        imageWidth = (int) (intrinsicWidth * w);
-    }
-
-    /**
-     * 进场动画过程监听
-     */
-    private void addIntoListener(ValueAnimator valueAnimator) {
-        valueAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                rootView.setBackgroundColor(0x0);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-        });
-    }
-
-    /**
-     * Integer 估值器
-     */
-    public Integer evaluateInt(float fraction, Integer startValue, Integer endValue) {
-        int startInt = startValue;
-        return (int) (startInt + fraction * (endValue - startInt));
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        return true;
-    }
-
-    /**
-     * Float 估值器
-     */
-    public Float evaluateFloat(float fraction, Number startValue, Number endValue) {
-        float startFloat = startValue.floatValue();
-        return startFloat + fraction * (endValue.floatValue() - startFloat);
-    }
-
-    /**
-     * Argb 估值器
-     */
-    public int evaluateArgb(float fraction, int startValue, int endValue) {
-        int startA = (startValue >> 24) & 0xff;
-        int startR = (startValue >> 16) & 0xff;
-        int startG = (startValue >> 8) & 0xff;
-        int startB = startValue & 0xff;
-
-        int endA = (endValue >> 24) & 0xff;
-        int endR = (endValue >> 16) & 0xff;
-        int endG = (endValue >> 8) & 0xff;
-        int endB = endValue & 0xff;
-
-        return (startA + (int) (fraction * (endA - startA))) << 24//
-                | (startR + (int) (fraction * (endR - startR))) << 16//
-                | (startG + (int) (fraction * (endG - startG))) << 8//
-                | (startB + (int) (fraction * (endB - startB)));
-    }
 
     @Override
     public void onBackPressed() {
@@ -180,9 +160,16 @@ public class ImagesActivity extends Activity implements ViewTreeObserver.OnPreDr
 
     @Override
     public void onPhotoTap(View view, float x, float y) {
+        addDanmu();
         /*if (currentImage < imageItemList.size()) {
             currentImage++;
             viewPager.setCurrentItem(currentImage);
         }*/
+    }
+
+    @Override
+    public boolean onPreDraw() {
+        rootView.setBackgroundColor(Color.BLACK);
+        return true;
     }
 }
