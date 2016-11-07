@@ -1,5 +1,7 @@
 package com.lufficc.ishuhui.service;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
@@ -8,16 +10,16 @@ import com.lufficc.ishuhui.data.source.file.FilesRepository;
 import com.lufficc.ishuhui.manager.Orm;
 import com.lufficc.ishuhui.model.Chapter;
 import com.lufficc.ishuhui.model.ChapterImages;
-import com.lufficc.ishuhui.model.Comic;
 import com.lufficc.ishuhui.model.FileEntry;
-import com.lufficc.ishuhui.utils.AppUtils;
+import com.lufficc.ishuhui.utils.FileUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -29,7 +31,13 @@ import okhttp3.Response;
 
 public class DownloadManager {
     private final LinkedList<ChapterImages> DOWNLOADING_IMAGES = new LinkedList<>();
-    private final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+    private final OkHttpClient okHttpClient = new OkHttpClient
+            .Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .build();
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    private final ArrayList<DownLoadListener> downLoadListeners = new ArrayList<>();
 
     private static DownloadManager INSTANCE;
 
@@ -42,6 +50,29 @@ public class DownloadManager {
             }
         }
         return INSTANCE;
+    }
+
+    public void addDownLoadListener(DownLoadListener loadListener) {
+        if (loadListener != null) {
+            synchronized (this) {
+                downLoadListeners.add(loadListener);
+            }
+        }
+    }
+
+    public boolean removeDownLoadListener(DownLoadListener loadListener) {
+        if (loadListener != null) {
+            synchronized (this) {
+                return downLoadListeners.remove(loadListener);
+            }
+        }
+        return false;
+    }
+
+    public void removeAllListeners() {
+        synchronized (this) {
+            downLoadListeners.clear();
+        }
     }
 
     public synchronized boolean isChapterDownloading(String chapterId) {
@@ -91,45 +122,105 @@ public class DownloadManager {
     }
 
     @WorkerThread
-    private void beforeDownload(Comic comic, Chapter chapter) {
+    private void beforeDownload(String comicName, Chapter chapter) {
         List<FileEntry> fileEntries = FilesRepository.getInstance().getFiles(chapter.Id);
         ChapterImages chapterImages = new ChapterImages();
         chapterImages.setChapterId(chapter.Id);
         chapterImages.setChapterName(chapter.Title);
         chapterImages.setChapterNo(chapter.ChapterNo);
-        chapterImages.setComicId(String.valueOf(comic.Id));
-        chapterImages.setComicName(comic.Title);
+        chapterImages.setComicId(chapter.BookId);
+        chapterImages.setComicName(comicName);
         chapterImages.setImages(fileEntries);
         long id = Orm.getLiteOrm().cascade().insert(chapterImages, ConflictAlgorithm.Replace);
         Log.i("handleDownload", "chapterImages inserted:" + id);
         downloadingQueue().addLast(chapterImages);
     }
 
+
+    private void postChapterDownloaded(final String comicId, final String chapterId) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (DownloadManager.this) {
+                    for (DownLoadListener loadListener : downLoadListeners) {
+                        loadListener.onChapterDownloaded(comicId, chapterId);
+                    }
+                }
+            }
+        });
+    }
+
+    private void postDownloadStart(final String comicId, final String chapterId) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (DownloadManager.this) {
+                    for (DownLoadListener loadListener : downLoadListeners) {
+                        loadListener.onDownloadStart(comicId, chapterId);
+                    }
+                }
+            }
+        });
+    }
+
+    private void postFileEntryDownloaded(final FileEntry fileEntry) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (DownloadManager.this) {
+                    for (DownLoadListener loadListener : downLoadListeners) {
+                        loadListener.onFileDownloaded(fileEntry);
+                    }
+                }
+            }
+        });
+    }
+
+    private void postException(final FileEntry fileEntry, final Exception e) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (DownloadManager.this) {
+                    for (DownLoadListener loadListener : downLoadListeners) {
+                        loadListener.onException(fileEntry, e);
+                    }
+                }
+            }
+        });
+    }
+
     @WorkerThread
-    void handleDownload(Comic comic, Chapter chapter) {
-        File dir = getChapterDir(comic, chapter);
+    void handleDownload(String comicName, Chapter chapter) {
+        File dir = FileUtils.getChapterDir(comicName, chapter);
         if (dir == null) {
             Log.i("handleDownload", "create dir failed");
             return;
         }
-        beforeDownload(comic, chapter);
+        beforeDownload(comicName, chapter);
         ChapterImages chapterImages = first();
         while (chapterImages != null) {
             realDownload(dir, chapterImages);
-            synchronized (this) {
-                removeFirst();
-                chapterImages = first();
-            }
+            removeFirst();
+            chapterImages = first();
         }
     }
 
-
     @WorkerThread
-    private void realDownload(File dir, ChapterImages chapterImages) {
+    private boolean realDownload(File dir, ChapterImages chapterImages) {
+        /**
+         * post msg
+         */
+        postDownloadStart(chapterImages.getComicId(), chapterImages.getChapterId());
+
+        boolean result = true;
         List<FileEntry> fileEntries = chapterImages.getImages();
         for (FileEntry fileEntry : fileEntries) {
             if (fileEntry.getLocalPath() != null && new File(fileEntry.getLocalPath()).exists()) {
                 Log.i("handleDownload", fileEntry.getTitle() + " already exits");
+                /**
+                 * post msg
+                 */
+                postFileEntryDownloaded(fileEntry);
                 continue;
             }
             fileEntry.setDownloading(true);
@@ -154,20 +245,66 @@ public class DownloadManager {
                 long id = Orm.getLiteOrm().insert(fileEntry, ConflictAlgorithm.Replace);
                 Log.i("handleDownload", "第" + fileEntry.getTitle() + "张 downloaded: download finished,id=" + id);
                 fileEntry.setDownloading(false);
-            } catch (IOException e) {
+                /**
+                 * post msg
+                 */
+                postFileEntryDownloaded(fileEntry);
+            } catch (Exception e) {
                 e.printStackTrace();
+                /**
+                 * post msg
+                 */
+                postException(fileEntry, e);
+                result = false;
             }
+        }
+        /**
+         * post msg
+         */
+        postChapterDownloaded(chapterImages.getComicId(), chapterImages.getChapterId());
+        return result;
+    }
+
+
+    void handleDownload(ChapterImages chapterImages) {
+        File dir = FileUtils.getChapterDir(chapterImages.getComicName(), chapterImages.getChapterNo(), chapterImages.getChapterName());
+        if (dir == null) {
+            Log.i("handleDownload", "create dir failed");
+            return;
+        }
+        realDownload(dir, chapterImages);
+    }
+
+    public static class SimpleDownLoadListener implements DownLoadListener {
+
+        @Override
+        public void onDownloadStart(String comicId, String chapterId) {
+
+        }
+
+        @Override
+        public void onChapterDownloaded(String comicId, String chapterId) {
+
+        }
+
+        @Override
+        public void onFileDownloaded(FileEntry fileEntry) {
+
+        }
+
+        @Override
+        public void onException(FileEntry fileEntry, Exception e) {
+
         }
     }
 
-    private File getChapterDir(Comic comic, Chapter chapter) {
-        File sdCardRoot = AppUtils.getAppDir();
-        File chapterDir = new File(sdCardRoot, File.separator + comic.Title + File.separator + (chapter.ChapterNo + "-" + chapter.Title) + File.separator);
-        if (!chapterDir.exists()) {
-            if (!chapterDir.mkdirs()) {
-                return null;
-            }
-        }
-        return chapterDir;
+    public interface DownLoadListener {
+        void onDownloadStart(String comicId, String chapterId);
+
+        void onChapterDownloaded(String comicId, String chapterId);
+
+        void onFileDownloaded(FileEntry fileEntry);
+
+        void onException(FileEntry fileEntry, Exception e);
     }
 }

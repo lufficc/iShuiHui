@@ -15,6 +15,8 @@ public interface ChapterImagesDataSource {
         void onFailed();
     }
 
+    int delete(ChapterImages chapterImages);
+
     List<ChapterImages> getChapterImagesList(String comicId);
 
     void getChapterImagesList(String comicId, LoadChapterImagesListCallback callback);

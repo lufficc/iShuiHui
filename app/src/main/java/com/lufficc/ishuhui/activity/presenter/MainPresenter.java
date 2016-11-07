@@ -2,7 +2,6 @@ package com.lufficc.ishuhui.activity.presenter;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.support.annotation.BoolRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -122,7 +121,7 @@ public class MainPresenter {
         }
         transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
         if (currentFragment == null) {
-            transaction.add(R.id.container, fragment, fragment.toString());
+            transaction.add(R.id.container, fragment, String.valueOf(fragmentId));
         } else {
             if (fragment.isAdded()) {
                 transaction

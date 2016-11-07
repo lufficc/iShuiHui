@@ -1,8 +1,5 @@
 package com.lufficc.ishuhui.utils;
 
-import android.os.Environment;
-
-import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,12 +20,9 @@ public class AppUtils {
         return PtrUtil.getInstance().getBoolean("chapter_" + chapterId + "_is_downloaded", false);
     }
 
-    public static File getAppDir() {
-        File sdCardRoot = Environment.getExternalStorageDirectory();
-        return new File(sdCardRoot, File.separator + "鼠绘漫画" + File.separator);
-    }
-
     public static ExecutorService getExecutorService() {
         return Executors.newCachedThreadPool();
     }
+
+
 }

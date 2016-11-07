@@ -28,47 +28,50 @@
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     android:background="?attr/colorPrimary"
-                    app:popupTheme="@style/AppTheme.PopupOverlay" />
+                    app:popupTheme="@style/AppTheme.PopupOverlay">
 
-                <RadioGroup
-                    android:id="@+id/actionbar_buttons"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <RadioButton
-                        android:id="@+id/actionbar_love"
+                    <RadioGroup
+                        android:id="@+id/actionbar_buttons"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:button="@drawable/selector_actionbar_love"
-                        android:checked="true"
-                        tools:button="@drawable/ic_action_love"
-                        tools:checked="true" />
+                        android:layout_height="?attr/actionBarSize"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                    <RadioButton
-                        android:id="@+id/actionbar_categories"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:button="@drawable/selector_actionbar_shuhui"
-                        tools:button="@drawable/ic_action_categories" />
+                        <RadioButton
+                            android:id="@+id/actionbar_love"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:button="@drawable/selector_actionbar_love"
+                            android:checked="true"
+                            tools:button="@drawable/ic_action_love"
+                            tools:checked="true" />
 
-                    <RadioButton
-                        android:id="@+id/actionbar_hot"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:button="@drawable/selector_actionbar_hot"
-                        tools:button="@drawable/ic_action_hot" />
+                        <RadioButton
+                            android:id="@+id/actionbar_categories"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:button="@drawable/selector_actionbar_shuhui"
+                            tools:button="@drawable/ic_action_categories" />
 
+                        <RadioButton
+                            android:id="@+id/actionbar_hot"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:button="@drawable/selector_actionbar_hot"
+                            tools:button="@drawable/ic_action_hot" />
+                    </RadioGroup>
+                </android.support.v7.widget.Toolbar>
 
-                </RadioGroup>
 
                 <com.miguelcatalan.materialsearchview.MaterialSearchView
                     android:id="@+id/search_view"

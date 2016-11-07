@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import master.flame.danmaku.controller.IDanmakuView;
 import master.flame.danmaku.danmaku.model.BaseDanmaku;
 import master.flame.danmaku.danmaku.model.IDanmakus;
 import master.flame.danmaku.danmaku.model.IDisplayer;
@@ -64,9 +63,6 @@ public class ImagesActivity extends Activity implements PhotoViewAttacher.OnPhot
         tv_pager = (TextView) findViewById(R.id.tv_pager);
         rootView = findViewById(R.id.rootView);
         danmakuView = (DanmakuView) findViewById(R.id.sv_danmaku);
-
-        initDanmu();
-
         Intent intent = getIntent();
         imageItemList = (List<FileEntry>) intent.getSerializableExtra(IMAGES_DATA);
 
@@ -86,6 +82,8 @@ public class ImagesActivity extends Activity implements PhotoViewAttacher.OnPhot
             }
         });
         setCurrentPage();
+
+        initDanmu();
         addDanmu();
     }
 

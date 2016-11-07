@@ -14,6 +14,7 @@ import butterknife.BindView;
 public class ViewPagerFragment extends BaseFragment implements ViewPager.OnPageChangeListener {
     @BindView(R.id.viewPager)
     ViewPager viewPager;
+    private static final String CURRENT_FRAGMENT = "current.fragment";
 
     @Override
     public void initialize(@Nullable Bundle savedInstanceState) {
@@ -23,7 +24,17 @@ public class ViewPagerFragment extends BaseFragment implements ViewPager.OnPageC
                 , CategoriesFragment.newInstance()
                 , ChapterImagesFragment.newInstance(null)));
         viewPager.addOnPageChangeListener(this);
-        viewPager.setCurrentItem(0);
+        int current = 0;
+        if (savedInstanceState != null) {
+            current = savedInstanceState.getInt(CURRENT_FRAGMENT, 0);
+        }
+        viewPager.setCurrentItem(current);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(CURRENT_FRAGMENT, viewPager.getCurrentItem());
+        super.onSaveInstanceState(outState);
     }
 
     private ViewPager.OnPageChangeListener onPageChangeListener;

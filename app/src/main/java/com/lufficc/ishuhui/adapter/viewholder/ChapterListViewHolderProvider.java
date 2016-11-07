@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,8 @@ import com.lufficc.ishuhui.adapter.ChapterListAdapter;
 import com.lufficc.ishuhui.manager.ChapterListManager;
 import com.lufficc.ishuhui.model.Chapter;
 import com.lufficc.ishuhui.model.Comic;
+import com.lufficc.ishuhui.model.FileEntry;
+import com.lufficc.ishuhui.service.DownloadManager;
 import com.lufficc.ishuhui.service.DownloadService;
 import com.lufficc.ishuhui.utils.JsonUtil;
 import com.lufficc.ishuhui.utils.PtrUtil;
@@ -33,7 +36,8 @@ import butterknife.ButterKnife;
  * Created by lufficc on 2016/9/5.
  */
 
-public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, ChapterListViewHolderProvider.ViewHolder> {
+public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, ChapterListViewHolderProvider.ViewHolder>
+        implements DownloadManager.DownLoadListener {
 
     private ChapterListAdapter adapter;
     private Context context;
@@ -55,6 +59,45 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
         viewHolder.onBindData(chapter, position);
     }
 
+    @Override
+    public void onDownloadStart(String comicId, String chapterId) {
+        int i = chapterId2Index(comicId, chapterId);
+        if (i != -1) {
+            adapter.updateData(i);
+        }
+    }
+
+    @Override
+    public void onChapterDownloaded(String comicId, String chapterId) {
+        int i = chapterId2Index(comicId, chapterId);
+        if (i != -1) {
+            adapter.updateData(i);
+        }
+    }
+
+    private int chapterId2Index(String comicId, String chapterId) {
+        if (Integer.valueOf(comicId) != comic.Id) {
+            return -1;
+        }
+        for (int i = 0; i < adapter.getData().size(); i++) {
+            Chapter chapter = (Chapter) adapter.getData().get(i);
+            if (chapter.Id.equals(chapterId)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public void onFileDownloaded(FileEntry fileEntry) {
+        Toast.makeText(context, "第" + fileEntry.getTitle() + "张下载完成", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onException(FileEntry fileEntry, Exception e) {
+
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.chapter_icon)
         ImageView chapter_icon;
@@ -69,7 +112,10 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
         TextView chapter_number;
 
         @BindView(R.id.chapter_view)
-        Button chapter_view;
+        Button downLoad;
+
+        @BindView(R.id.progressBar)
+        ProgressBar progressBar;
 
 
         ViewHolder(View itemView) {
@@ -95,39 +141,54 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
                 }
             });
 
-            chapter_view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ChapterListManager.instance().setChapters(adapter.getData(), position);
-                    PtrUtil.getInstance().start()
-                            .put("book" + data.BookId, JsonUtil.getInstance().toJson(data))
-                            .put("book_chapter_" + data.BookId, data.ChapterNo)
-                            .commit();
-                    WebActivity.showWebView(itemView.getContext(), data);
-                }
-            });
+            if (DownloadManager.getInstance().isChapterDownloading(data.Id)) {
+                downLoad.setClickable(false);
+                downLoad.setOnClickListener(null);
+                downLoad.setText("下载中...");
+                progressBar.setVisibility(View.VISIBLE);
+            } else {
+                downLoad.setClickable(true);
+                downLoad.setText("下载");
+                progressBar.setVisibility(View.GONE);
+                downLoad.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        download(data);
+                    }
+                });
+            }
+
+        }
+
+        private void buildDialog(final Chapter chapter) {
+            new AlertDialog
+                    .Builder(context)
+                    .setItems(new String[]{"下载", "在网页中查看"}, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case 0:
+                                    download(chapter);
+                                    break;
+                                case 1:
+                                    ChapterListManager.instance().setChapters(adapter.getData(), getAdapterPosition());
+                                    PtrUtil.getInstance().start()
+                                            .put("book" + chapter.BookId, JsonUtil.getInstance().toJson(chapter))
+                                            .put("book_chapter_" + chapter.BookId, chapter.ChapterNo)
+                                            .commit();
+                                    WebActivity.showWebView(context, chapter);
+                                    break;
+                            }
+                        }
+                    })
+                    .create()
+                    .show();
         }
     }
 
-    private void buildDialog(final Chapter chapter) {
-        new AlertDialog
-                .Builder(context)
-                .setItems(new String[]{"下载"}, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0:
-                                download(chapter);
-                                break;
-                        }
-                    }
-                })
-                .create()
-                .show();
-    }
 
     private void download(Chapter chapter) {
-        DownloadService.startActionDownload(context, comic, chapter);
+        DownloadService.startDownload(context, comic.Title, chapter);
         Toast.makeText(context, chapter.Title + "已加入下载队列", Toast.LENGTH_SHORT).show();
     }
 }

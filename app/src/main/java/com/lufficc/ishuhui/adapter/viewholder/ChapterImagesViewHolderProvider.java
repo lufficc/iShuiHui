@@ -14,12 +14,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.lufficc.ishuhui.R;
 import com.lufficc.ishuhui.adapter.ChapterImagesAdapter;
+import com.lufficc.ishuhui.data.source.chapter.images.ChapterImagesRepository;
 import com.lufficc.ishuhui.model.ChapterImages;
 import com.lufficc.ishuhui.model.FileEntry;
+import com.lufficc.ishuhui.service.DownloadService;
+import com.lufficc.ishuhui.utils.FileUtils;
 import com.lufficc.lightadapter.LightAdapter;
 import com.lufficc.lightadapter.ViewHolderProvider;
 
@@ -95,17 +102,32 @@ public class ChapterImagesViewHolderProvider extends ViewHolderProvider<ChapterI
             } else {
                 foreground.setBackgroundColor(oddColor);
             }
-            List<FileEntry> fileEntries = data.getImages();
+            final List<FileEntry> fileEntries = data.getImages();
             if (fileEntries != null && !fileEntries.isEmpty()) {
-                Glide.with(itemView.getContext()).load(fileEntries.get(0).getLocalPath()).placeholder(R.color.black_tran).error(R.color.black_tran).into(iv_image);
+                Glide.with(itemView.getContext()).load(fileEntries.get(0).getLocalPath())
+                        .placeholder(R.color.black).error(R.color.black)
+                        .listener(new RequestListener<String, GlideDrawable>() {
+                            @Override
+                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                Glide.with(itemView.getContext()).load(fileEntries.get(0).getUrl())
+                                        .placeholder(R.color.black).error(R.color.black).into(iv_image);
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                return false;
+                            }
+                        }).into(iv_image);
             }
         }
 
         private void buildMenu(TextView anchor, final ChapterImages data) {
             PopupMenu popupMenu = new PopupMenu(context, anchor);
             Menu menu = popupMenu.getMenu();
-            menu.add(1, 1, 1, "删除");
+            menu.add(1, 1, 1, "删除此章节");
             menu.add(1, 2, 1, "删除(包括本地图片)");
+            menu.add(1, 3, 1, "下载丢失图片");
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
@@ -116,12 +138,20 @@ public class ChapterImagesViewHolderProvider extends ViewHolderProvider<ChapterI
                         case 2:
                             delete(data, true);
                             break;
+                        case 3:
+                            downloadLostImages(data);
+                            break;
                     }
                     return true;
                 }
             });
             popupMenu.show();
         }
+    }
+
+    private void downloadLostImages(ChapterImages data) {
+        DownloadService.startDownload(context, data);
+        Toast.makeText(context, "下载开始", Toast.LENGTH_SHORT).show();
     }
 
     private void delete(final ChapterImages data, final boolean includeLocal) {
@@ -131,8 +161,11 @@ public class ChapterImagesViewHolderProvider extends ViewHolderProvider<ChapterI
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (includeLocal) {
+                        if (ChapterImagesRepository.getInstance().delete(data) > 0) {
                             adapter.removeData(data);
+                        }
+                        if (includeLocal) {
+                            FileUtils.deleteChapterImages(data);
                         }
                     }
                 })

@@ -65,7 +65,18 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="16dp"
-        android:text="@string/view"
+        android:text="@string/download"
         tools:ignore="RtlHardcoded"
-        tools:text="@string/view" />
+        tools:text="@string/download" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/chapter_view"
+        android:layout_toStartOf="@id/chapter_view"
+        android:visibility="gone"
+        tools:visibility="visible" />
 </RelativeLayout>

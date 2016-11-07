@@ -122,12 +122,7 @@ public class MainActivity extends BaseActivity implements
         actionButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                boolean see = PtrUtil.getInstance().getInt("latest_see_id", -1) > 0;
-                if (see) {
-                    toast(PtrUtil.getInstance().getString("latest_see_title", "未知漫画"));
-                } else {
-                    toast("最近没看漫画");
-                }
+                toast("点击查看最近看的漫画");
                 return true;
             }
         });

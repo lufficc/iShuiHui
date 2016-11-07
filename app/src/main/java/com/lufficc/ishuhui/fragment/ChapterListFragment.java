@@ -14,6 +14,8 @@ import com.lufficc.ishuhui.adapter.ChapterListAdapter;
 import com.lufficc.ishuhui.adapter.viewholder.HeaderViewProvider;
 import com.lufficc.ishuhui.model.Chapter;
 import com.lufficc.ishuhui.model.Comic;
+import com.lufficc.ishuhui.model.FileEntry;
+import com.lufficc.ishuhui.service.DownloadManager;
 import com.lufficc.ishuhui.utils.JsonUtil;
 import com.lufficc.ishuhui.utils.PtrUtil;
 import com.lufficc.ishuhui.widget.DefaultItemDecoration;
@@ -25,7 +27,7 @@ import java.util.List;
 import butterknife.BindView;
 
 public class ChapterListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener,
-        ChapterListView{
+        ChapterListView, DownloadManager.DownLoadListener {
     public static final String COMIC = "COMIC";
 
     public static final String KEY_LAST_SEE = "KEY_LAST_SEE";
@@ -98,12 +100,11 @@ public class ChapterListFragment extends BaseFragment implements SwipeRefreshLay
         recyclerView.setAdapter(adapter);
 
         swipeRefreshLayout.setOnRefreshListener(this);
-
         getData();
     }
 
     private ChapterListAdapter initAdapter() {
-        adapter = new ChapterListAdapter(getContext(),comic);
+        adapter = new ChapterListAdapter(getContext(), comic);
         adapter.addHeader(header = new HeaderViewProvider.Header());
         header.setTitle(comic.Title);
         header.setDes(comic.Explain);
@@ -123,7 +124,6 @@ public class ChapterListFragment extends BaseFragment implements SwipeRefreshLay
     }
 
 
-
     private void getData() {
         if (adapter.isDataEmpty())
             stateLayout.showProgressView();
@@ -131,12 +131,23 @@ public class ChapterListFragment extends BaseFragment implements SwipeRefreshLay
     }
 
     @Override
+    public void onPause() {
+        DownloadManager.getInstance().removeDownLoadListener(this);
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        DownloadManager.getInstance().addDownLoadListener(this);
+    }
+
+    @Override
     public void onDestroy() {
+
         super.onDestroy();
         chapterListPresenter.onDestroy();
     }
-
-
 
 
     @Override
@@ -181,4 +192,23 @@ public class ChapterListFragment extends BaseFragment implements SwipeRefreshLay
         }
     }
 
+    @Override
+    public void onDownloadStart(String comicId, String chapterId) {
+        adapter.getChapterListViewHolderProvider().onDownloadStart(comicId, chapterId);
+    }
+
+    @Override
+    public void onChapterDownloaded(String comicId, String chapterId) {
+        adapter.getChapterListViewHolderProvider().onChapterDownloaded(comicId, chapterId);
+    }
+
+    @Override
+    public void onFileDownloaded(FileEntry onException) {
+        adapter.getChapterListViewHolderProvider().onFileDownloaded(onException);
+    }
+
+    @Override
+    public void onException(FileEntry fileEntry, Exception e) {
+        adapter.getChapterListViewHolderProvider().onException(fileEntry, e);
+    }
 }

@@ -18,7 +18,6 @@ import com.lufficc.ishuhui.adapter.FragmentsAdapter;
 import com.lufficc.ishuhui.constants.API;
 import com.lufficc.ishuhui.fragment.ChapterImagesFragment;
 import com.lufficc.ishuhui.fragment.ChapterListFragment;
-import com.lufficc.ishuhui.model.Chapter;
 import com.lufficc.ishuhui.model.Comic;
 import com.lufficc.ishuhui.model.User;
 import com.lufficc.ishuhui.utils.JsonUtil;
@@ -83,22 +82,6 @@ public class ChapterListActivity extends BaseActivity implements SubscribeView, 
         viewPager.addOnPageChangeListener(this);
     }
 
-    private final static int MENU_ID = 89456;
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        String json = PtrUtil.getInstance().getString("book" + bookId, null);
-        if (json != null) {
-            Chapter chapter = JsonUtil.getInstance().fromJson(json, Chapter.class);
-            MenuItem menuItem = menu.findItem(MENU_ID);
-            if (menuItem == null) {
-                menu.add(100, MENU_ID, 100, chapter.Title);
-            } else {
-                menuItem.setTitle(chapter.Title);
-            }
-        }
-        return true;
-    }
 
 
     @Override
@@ -123,9 +106,6 @@ public class ChapterListActivity extends BaseActivity implements SubscribeView, 
                 i.setType("text/plain");
                 startActivity(i);
                 return true;
-
-            case MENU_ID:
-                break;
         }
         return super.onOptionsItemSelected(item);
     }

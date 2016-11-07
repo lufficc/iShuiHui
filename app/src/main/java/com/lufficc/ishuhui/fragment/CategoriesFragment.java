@@ -17,14 +17,25 @@ public class CategoriesFragment extends BaseFragment {
 
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
+    private static final String CURRENT_FRAGMENT = "categories.current.fragment";
 
     @Override
     public void initialize(@Nullable Bundle savedInstanceState) {
         super.initialize(savedInstanceState);
         viewPager.setAdapter(new CategoriesFragmentsAdapter(getChildFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
+        int current = 0;
+        if (savedInstanceState != null) {
+            current = savedInstanceState.getInt(CURRENT_FRAGMENT, 0);
+        }
+        viewPager.setCurrentItem(current);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(CURRENT_FRAGMENT, viewPager.getCurrentItem());
+        super.onSaveInstanceState(outState);
+    }
 
     public static CategoriesFragment newInstance() {
         return new CategoriesFragment();

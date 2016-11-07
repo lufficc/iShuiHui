@@ -27,6 +27,7 @@ public class FileEntry implements Serializable {
     @Ignore
     private boolean downloading;
 
+    //image order
     private String title;
     private String chapterId;
     private String chapterName;

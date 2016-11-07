@@ -6,7 +6,10 @@ import android.os.Looper;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.lufficc.ishuhui.manager.Orm;
 import com.lufficc.ishuhui.model.ChapterImages;
+import com.lufficc.ishuhui.model.FileEntry;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,8 +39,28 @@ public class ChapterImagesRepository implements ChapterImagesDataSource {
 
 
     @Override
+    public int delete(ChapterImages chapterImages) {
+        return Orm.getLiteOrm().delete(chapterImages);
+    }
+
+    @Override
     public List<ChapterImages> getChapterImagesList(String comicId) {
-        return Orm.getLiteOrm().cascade().query(new QueryBuilder<>(ChapterImages.class).where("comicId = ?", comicId).appendOrderDescBy("chapterNo"));
+        List<ChapterImages> chapterImagesList = Orm.getLiteOrm().cascade().query(new QueryBuilder<>(ChapterImages.class).where("comicId = ?", comicId).appendOrderDescBy("chapterNo"));
+        if (chapterImagesList != null) {
+            for (ChapterImages chapterImages : chapterImagesList) {
+                sort(chapterImages);
+            }
+        }
+        return chapterImagesList;
+    }
+
+    private void sort(ChapterImages chapterImages) {
+        Collections.sort(chapterImages.getImages(), new Comparator<FileEntry>() {
+            @Override
+            public int compare(FileEntry o1, FileEntry o2) {
+                return o1.getTitle().compareTo(o2.getTitle());
+            }
+        });
     }
 
     @Override
@@ -62,7 +85,13 @@ public class ChapterImagesRepository implements ChapterImagesDataSource {
 
     @Override
     public List<ChapterImages> getChapterImagesList() {
-        return Orm.getLiteOrm().cascade().query(new QueryBuilder<>(ChapterImages.class).appendOrderDescBy("comicName").appendOrderDescBy("chapterNo"));
+        List<ChapterImages> chapterImagesList = Orm.getLiteOrm().cascade().query(new QueryBuilder<>(ChapterImages.class).appendOrderDescBy("comicName").appendOrderDescBy("chapterNo"));
+        if (chapterImagesList != null) {
+            for (ChapterImages chapterImages : chapterImagesList) {
+                sort(chapterImages);
+            }
+        }
+        return chapterImagesList;
     }
 
     @Override
