@@ -21,7 +21,7 @@ public class ViewPagerFragment extends BaseFragment implements ViewPager.OnPageC
         viewPager.setAdapter(new FragmentsAdapter(getChildFragmentManager()
                 , SubscribeFragment.newInstance()
                 , CategoriesFragment.newInstance()
-                , ChapterImagesFragment.newInstance()));
+                , ChapterImagesFragment.newInstance(null)));
         viewPager.addOnPageChangeListener(this);
         viewPager.setCurrentItem(0);
     }

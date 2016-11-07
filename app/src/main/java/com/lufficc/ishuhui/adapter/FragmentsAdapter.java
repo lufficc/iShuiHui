@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.lufficc.ishuhui.fragment.BaseFragment;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,9 +15,9 @@ import java.util.List;
  */
 
 public class FragmentsAdapter extends FragmentPagerAdapter {
-    private List<Fragment> fragments = new ArrayList<>(3);
+    protected final List<BaseFragment> fragments = new ArrayList<>(3);
 
-    public FragmentsAdapter(FragmentManager fm, Fragment first, Fragment... fragments) {
+    public FragmentsAdapter(FragmentManager fm, BaseFragment first, BaseFragment... fragments) {
         super(fm);
         this.fragments.add(first);
         if (fragments != null) {
@@ -27,7 +29,10 @@ public class FragmentsAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         return fragments.get(position);
     }
-
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return fragments.get(position).getTitle();
+    }
     @Override
     public int getCount() {
         return fragments.size();

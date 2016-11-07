@@ -42,11 +42,13 @@ public abstract class BaseFragment extends Fragment {
         super.onAttach(context);
         this.context = context;
     }
+
     @Override
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart(toString()); //统计页面，"MainScreen"为页面名称，可自定义
     }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -73,6 +75,10 @@ public abstract class BaseFragment extends Fragment {
 
     public void onCreateView() {
 
+    }
+
+    public CharSequence getTitle() {
+        return "";
     }
 
     private Toast toast;

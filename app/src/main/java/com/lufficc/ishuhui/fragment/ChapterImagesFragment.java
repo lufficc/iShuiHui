@@ -1,6 +1,7 @@
 package com.lufficc.ishuhui.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import com.lufficc.ishuhui.adapter.ChapterImagesAdapter;
 import com.lufficc.ishuhui.data.source.chapter.images.ChapterImagesDataSource;
 import com.lufficc.ishuhui.data.source.chapter.images.ChapterImagesRepository;
 import com.lufficc.ishuhui.model.ChapterImages;
+import com.lufficc.ishuhui.model.Comic;
 import com.lufficc.lightadapter.OnDataClickListener;
 import com.lufficc.stateLayout.StateLayout;
 
@@ -32,13 +34,21 @@ public class ChapterImagesFragment extends BaseFragment implements SwipeRefreshL
 
     ChapterImagesAdapter adapter;
 
+    Comic comic;
 
-    public static ChapterImagesFragment newInstance() {
-        return new ChapterImagesFragment();
+    public static ChapterImagesFragment newInstance(@Nullable Comic comic) {
+        ChapterImagesFragment fragment = new ChapterImagesFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("comic", comic);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void initialize(Bundle savedInstanceState) {
+        if (getArguments() != null) {
+            comic = (Comic) getArguments().getSerializable("comic");
+        }
         init();
     }
 
@@ -65,10 +75,22 @@ public class ChapterImagesFragment extends BaseFragment implements SwipeRefreshL
     }
 
     private void getData() {
-        if (adapter.isDataEmpty()){
+        if (adapter.isDataEmpty()) {
             stateLayout.showProgressView();
         }
-        ChapterImagesRepository.getInstance().getChapterImagesList(this);
+        if (comic == null) {
+            ChapterImagesRepository.getInstance().getChapterImagesList(this);
+        } else {
+            ChapterImagesRepository.getInstance().getChapterImagesList(String.valueOf(comic.Id), this);
+        }
+    }
+
+    @Override
+    public CharSequence getTitle() {
+        if(comic == null){
+            return super.getTitle();
+        }
+        return comic.Title+"的下载";
     }
 
     @Override

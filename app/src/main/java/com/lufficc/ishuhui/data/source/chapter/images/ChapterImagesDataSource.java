@@ -15,15 +15,9 @@ public interface ChapterImagesDataSource {
         void onFailed();
     }
 
-    interface LoadChapterImagesCallback {
-        void onLoaded(ChapterImages chapterImages);
+    List<ChapterImages> getChapterImagesList(String comicId);
 
-        void onFailed();
-    }
-
-    ChapterImages getChapterImages(String chapterId);
-
-    void getChapterImages(String chapterId, LoadChapterImagesCallback callback);
+    void getChapterImagesList(String comicId, LoadChapterImagesListCallback callback);
 
     List<ChapterImages> getChapterImagesList();
 

@@ -78,7 +78,7 @@ public class CategoryFragment extends BaseFragment implements IView<List<Comic>>
     private String title;
 
     @Override
-    public String toString() {
+    public CharSequence getTitle() {
         return title;
     }
 

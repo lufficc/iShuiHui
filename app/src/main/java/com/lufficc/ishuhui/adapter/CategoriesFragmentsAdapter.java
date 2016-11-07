@@ -16,5 +16,4 @@ public class CategoriesFragmentsAdapter extends FragmentsAdapter {
                 , CategoryFragment.newInstance(CategoryFragment.CLASSIFY_ID_MOUSE)
                 , CategoryFragment.newInstance(CategoryFragment.CLASSIFY_ID_SAME));
     }
-
 }

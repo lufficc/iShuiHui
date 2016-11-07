@@ -5,23 +5,30 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.lufficc.ishuhui.R;
+import com.lufficc.ishuhui.activity.iview.SubscribeView;
+import com.lufficc.ishuhui.activity.presenter.SubscribePresenter;
 import com.lufficc.ishuhui.adapter.FragmentsAdapter;
 import com.lufficc.ishuhui.constants.API;
+import com.lufficc.ishuhui.fragment.ChapterImagesFragment;
 import com.lufficc.ishuhui.fragment.ChapterListFragment;
 import com.lufficc.ishuhui.model.Chapter;
 import com.lufficc.ishuhui.model.Comic;
+import com.lufficc.ishuhui.model.User;
 import com.lufficc.ishuhui.utils.JsonUtil;
 import com.lufficc.ishuhui.utils.PtrUtil;
+import com.lufficc.ishuhui.utils.SubscribeUtil;
 
 import butterknife.BindView;
 
 
-public class ChapterListActivity extends BaseActivity {
+public class ChapterListActivity extends BaseActivity implements SubscribeView, View.OnClickListener, ViewPager.OnPageChangeListener {
     public static final String COMIC = "COMIC";
 
     public static final String KEY_LAST_SEE = "KEY_LAST_SEE";
@@ -29,10 +36,15 @@ public class ChapterListActivity extends BaseActivity {
     @BindView(R.id.viewPager)
     ViewPager viewPager;
 
+    SubscribePresenter subscribePresenter;
+
+    @BindView(R.id.fab_subscribe)
+    FloatingActionButton fab_subscribe;
 
     private Comic comic;
     private String title;
     private int bookId;
+    private boolean isSubscribed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +52,10 @@ public class ChapterListActivity extends BaseActivity {
         comic = (Comic) getIntent().getSerializableExtra(COMIC);
         bookId = comic.Id;
         title = comic.Title;
+        isSubscribed = SubscribeUtil.isSubscribed(bookId);
+        if (isSubscribed) {
+            fab_subscribe.setImageResource(R.mipmap.ic_done);
+        }
         init();
         PtrUtil.getInstance().start()
                 .put(KEY_LAST_SEE, JsonUtil.toJson(comic))
@@ -57,9 +73,14 @@ public class ChapterListActivity extends BaseActivity {
 
     private void init() {
         setTitle(title);
-        FragmentsAdapter adapter = new FragmentsAdapter(getSupportFragmentManager(), ChapterListFragment.newInstance(comic));
+        subscribePresenter = new SubscribePresenter(this);
+        fab_subscribe.setOnClickListener(this);
+        FragmentsAdapter adapter = new FragmentsAdapter(getSupportFragmentManager()
+                , ChapterListFragment.newInstance(comic)
+                , ChapterImagesFragment.newInstance(comic)
+        );
         viewPager.setAdapter(adapter);
-
+        viewPager.addOnPageChangeListener(this);
     }
 
     private final static int MENU_ID = 89456;
@@ -112,5 +133,64 @@ public class ChapterListActivity extends BaseActivity {
     @Override
     public int getLayoutId() {
         return R.layout.activity_chapter_list;
+    }
+
+    private void subscribe() {
+        if (!User.getInstance().isLogin()) {
+            LoginActivity.login(this);
+            toast("登陆后才能订阅吆");
+            return;
+        }
+        subscribePresenter.subscribe(comic, isSubscribed);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fab_subscribe:
+                subscribe();
+                break;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        subscribePresenter.onDestroy();
+    }
+
+    @Override
+    public void onSubscribe(boolean isSubscribed) {
+        if (isSubscribed) {
+            toast("订阅成功");
+        } else {
+            toast("已取消订阅");
+        }
+        this.isSubscribed = isSubscribed;
+        if (isSubscribed) {
+            fab_subscribe.setImageResource(R.mipmap.ic_done);
+        } else {
+            fab_subscribe.setImageResource(R.mipmap.ic_add);
+        }
+    }
+
+    @Override
+    public void onFailSubscribe(String msg) {
+        toast(msg);
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        setTitle(viewPager.getAdapter().getPageTitle(position));
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
     }
 }

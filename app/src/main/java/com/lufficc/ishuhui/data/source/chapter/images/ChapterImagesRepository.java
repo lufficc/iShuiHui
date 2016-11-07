@@ -3,6 +3,7 @@ package com.lufficc.ishuhui.data.source.chapter.images;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.litesuits.orm.db.assit.QueryBuilder;
 import com.lufficc.ishuhui.manager.Orm;
 import com.lufficc.ishuhui.model.ChapterImages;
 
@@ -33,35 +34,35 @@ public class ChapterImagesRepository implements ChapterImagesDataSource {
         return INSTANCE;
     }
 
+
     @Override
-    public ChapterImages getChapterImages(String chapterId) {
-        return Orm.getLiteOrm().cascade().queryById(chapterId, ChapterImages.class);
+    public List<ChapterImages> getChapterImagesList(String comicId) {
+        return Orm.getLiteOrm().cascade().query(new QueryBuilder<>(ChapterImages.class).where("comicId = ?", comicId).appendOrderDescBy("chapterNo"));
     }
 
     @Override
-    public void getChapterImages(final String chapterId, final LoadChapterImagesCallback callback) {
+    public void getChapterImagesList(final String comicId, final LoadChapterImagesListCallback callback) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                final ChapterImages chapterImages = getChapterImages(chapterId);
+                final List<ChapterImages> chapterImagesList = getChapterImagesList(comicId);
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (chapterImages == null) {
+                        if (chapterImagesList == null) {
                             callback.onFailed();
                         } else {
-                            callback.onLoaded(chapterImages);
+                            callback.onLoaded(chapterImagesList);
                         }
                     }
                 });
-
             }
         });
     }
 
     @Override
     public List<ChapterImages> getChapterImagesList() {
-        return Orm.getLiteOrm().cascade().query(ChapterImages.class);
+        return Orm.getLiteOrm().cascade().query(new QueryBuilder<>(ChapterImages.class).appendOrderDescBy("comicName").appendOrderDescBy("chapterNo"));
     }
 
     @Override
