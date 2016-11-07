@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="150dp"
-    android:foreground="?attr/selectableItemBackground"
-    android:layout_marginTop="3px">
+    android:foreground="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/iv_image"
@@ -14,9 +13,10 @@
         android:scaleType="centerCrop" />
 
     <LinearLayout
+        android:id="@+id/foreground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#40000000"
+        android:background="@color/black_tran"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -32,15 +32,32 @@
             android:textStyle="bold"
             tools:text="第12话" />
 
-        <TextView
-            android:id="@+id/tv_comicTitle"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="4dp"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            tools:text="海贼王" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_comicTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="4dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                tools:text="海贼王" />
+
+            <TextView
+                android:id="@+id/tv_chapterNo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="italic"
+                android:typeface="monospace"
+                tools:text="第12话" />
+        </LinearLayout>
     </LinearLayout>
 
 

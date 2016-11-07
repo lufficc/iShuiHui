@@ -14,6 +14,6 @@ public class ChapterImagesAdapter extends LightAdapter{
 
     public ChapterImagesAdapter(final Context context) {
         this.context = context;
-        register(ChapterImages.class, new ChapterImagesViewHolderProvider(context));
+        register(ChapterImages.class, new ChapterImagesViewHolderProvider(this,context));
     }
 }

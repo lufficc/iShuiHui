@@ -32,9 +32,9 @@ public class ChapterImagesFragment extends BaseFragment implements SwipeRefreshL
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
-    ChapterImagesAdapter adapter;
+    private ChapterImagesAdapter adapter;
 
-    Comic comic;
+    private Comic comic;
 
     public static ChapterImagesFragment newInstance(@Nullable Comic comic) {
         ChapterImagesFragment fragment = new ChapterImagesFragment();
@@ -65,7 +65,6 @@ public class ChapterImagesFragment extends BaseFragment implements SwipeRefreshL
         adapter.setOnDataClickListener(this);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark);
-
     }
 
     @Override
@@ -87,10 +86,10 @@ public class ChapterImagesFragment extends BaseFragment implements SwipeRefreshL
 
     @Override
     public CharSequence getTitle() {
-        if(comic == null){
+        if (comic == null) {
             return super.getTitle();
         }
-        return comic.Title+"的下载";
+        return comic.Title + "的下载";
     }
 
     @Override
@@ -114,7 +113,7 @@ public class ChapterImagesFragment extends BaseFragment implements SwipeRefreshL
     @Override
     public void onLoaded(List<ChapterImages> chapterImagesList) {
         if (chapterImagesList.isEmpty()) {
-            stateLayout.showEmptyView();
+            stateLayout.showEmptyView("您还未下载章节吆~");
         } else {
             stateLayout.showContentView();
             adapter.setData(chapterImagesList);

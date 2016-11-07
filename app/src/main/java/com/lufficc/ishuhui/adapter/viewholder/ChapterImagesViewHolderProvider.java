@@ -1,14 +1,15 @@
 package com.lufficc.ishuhui.adapter.viewholder;
 
 import android.content.Context;
-import android.graphics.Typeface;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.RelativeSizeSpan;
-import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,8 +17,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.lufficc.ishuhui.R;
+import com.lufficc.ishuhui.adapter.ChapterImagesAdapter;
 import com.lufficc.ishuhui.model.ChapterImages;
 import com.lufficc.ishuhui.model.FileEntry;
+import com.lufficc.lightadapter.LightAdapter;
 import com.lufficc.lightadapter.ViewHolderProvider;
 
 import java.util.List;
@@ -32,8 +35,10 @@ import butterknife.ButterKnife;
 public class ChapterImagesViewHolderProvider extends ViewHolderProvider<ChapterImages, ChapterImagesViewHolderProvider.ViewHolder> {
 
     private Context context;
+    private LightAdapter adapter;
 
-    public ChapterImagesViewHolderProvider(Context context) {
+    public ChapterImagesViewHolderProvider(ChapterImagesAdapter chapterImagesAdapter, Context context) {
+        this.adapter = chapterImagesAdapter;
         this.context = context;
     }
 
@@ -44,10 +49,15 @@ public class ChapterImagesViewHolderProvider extends ViewHolderProvider<ChapterI
 
     @Override
     public void onBindViewHolder(ChapterImages chapter, ViewHolder viewHolder, int position) {
-        viewHolder.onBindData(chapter);
+        viewHolder.onBindData(chapter, position);
     }
 
+    private static int oddColor = Color.parseColor("#50000000");
+    private static int evenColor = Color.parseColor("#60000000");
+
     class ViewHolder extends RecyclerView.ViewHolder {
+
+
         @BindView(R.id.iv_image)
         ImageView iv_image;
 
@@ -57,23 +67,78 @@ public class ChapterImagesViewHolderProvider extends ViewHolderProvider<ChapterI
         @BindView(R.id.tv_comicTitle)
         TextView tv_comicTitle;
 
+        @BindView(R.id.tv_chapterNo)
+        TextView tv_chapterNo;
+
+
+        @BindView(R.id.foreground)
+        View foreground;
+
         ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        void onBindData(final ChapterImages data) {
-            String chapterNo = "第" + data.getChapterNo() + "话";
-            SpannableString spannableString = new SpannableString(chapterNo + " - " + data.getChapterName());
-            spannableString.setSpan(new StyleSpan(Typeface.ITALIC), 0, chapterNo.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            spannableString.setSpan(new RelativeSizeSpan(0.75f), 0, chapterNo.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            tv_chapterTitle.setText(spannableString);
+        void onBindData(final ChapterImages data, int position) {
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    buildMenu(tv_chapterTitle, data);
+                    return true;
+                }
+            });
+            tv_chapterTitle.setText(data.getChapterName());
             tv_comicTitle.setText(data.getComicName());
+            tv_chapterNo.setText("第" + data.getChapterNo() + "话");
+            if (position % 2 == 0) {
+                foreground.setBackgroundColor(evenColor);
+            } else {
+                foreground.setBackgroundColor(oddColor);
+            }
             List<FileEntry> fileEntries = data.getImages();
             if (fileEntries != null && !fileEntries.isEmpty()) {
-                Glide.with(itemView.getContext()).load(fileEntries.get(0).getLocalPath()).placeholder(R.color.black).error(R.color.black).into(iv_image);
+                Glide.with(itemView.getContext()).load(fileEntries.get(0).getLocalPath()).placeholder(R.color.black_tran).error(R.color.black_tran).into(iv_image);
             }
         }
+
+        private void buildMenu(TextView anchor, final ChapterImages data) {
+            PopupMenu popupMenu = new PopupMenu(context, anchor);
+            Menu menu = popupMenu.getMenu();
+            menu.add(1, 1, 1, "删除");
+            menu.add(1, 2, 1, "删除(包括本地图片)");
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case 1:
+                            delete(data, false);
+                            break;
+                        case 2:
+                            delete(data, true);
+                            break;
+                    }
+                    return true;
+                }
+            });
+            popupMenu.show();
+        }
+    }
+
+    private void delete(final ChapterImages data, final boolean includeLocal) {
+        String msg = includeLocal ? "确定删除" + data.getChapterName() + "以及本地图片吗?" : "确定删除" + data.getChapterName() + "?";
+        new AlertDialog.Builder(context)
+                .setMessage(msg)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (includeLocal) {
+                            adapter.removeData(data);
+                        }
+                    }
+                })
+                .setNegativeButton("取消", null)
+                .create()
+                .show();
     }
 
 
