@@ -24,9 +24,9 @@
         android:layout_centerVertical="true"
         android:layout_marginTop="16dp"
         android:layout_toEndOf="@id/chapter_icon"
-        android:layout_toLeftOf="@+id/chapter_view"
+        android:layout_toLeftOf="@+id/wrap"
         android:layout_toRightOf="@id/chapter_icon"
-        android:layout_toStartOf="@+id/chapter_view"
+        android:layout_toStartOf="@+id/wrap"
         android:orientation="vertical">
 
         <TextView
@@ -56,27 +56,34 @@
             tools:text="2016-08-25" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/chapter_view"
-        style="@style/ViewButton"
+
+    <FrameLayout
+        android:id="@+id/wrap"
         android:layout_width="60dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="4dp"
         android:layout_marginRight="16dp"
-        android:text="@string/download"
-        tools:ignore="RtlHardcoded"
-        tools:text="@string/download" />
+        android:gravity="center">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/chapter_view"
-        android:layout_toStartOf="@id/chapter_view"
-        android:visibility="gone"
-        tools:visibility="visible" />
+        <Button
+            android:id="@+id/chapter_view"
+            style="@style/ViewButton"
+            android:layout_width="60dp"
+            android:text="@string/download"
+            tools:ignore="RtlHardcoded"
+            tools:text="@string/download" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </FrameLayout>
+
+
 </RelativeLayout>

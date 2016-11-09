@@ -6,6 +6,7 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.litesuits.orm.db.model.ConflictAlgorithm;
+import com.lufficc.ishuhui.data.source.chapter.images.ChapterImagesRepository;
 import com.lufficc.ishuhui.data.source.file.FilesRepository;
 import com.lufficc.ishuhui.manager.Orm;
 import com.lufficc.ishuhui.model.Chapter;
@@ -75,8 +76,16 @@ public class DownloadManager {
         }
     }
 
+    public synchronized int chapterSize(String chapterId) {
+        for (ChapterImages c : DOWNLOADING_IMAGES) {
+            if (c.getChapterId().equals(chapterId))
+                return c.getImages() != null ? c.getImages().size() : 0;
+        }
+        return 0;
+    }
+
     public synchronized boolean isChapterDownloading(String chapterId) {
-        for (ChapterImages c : downloadingQueue()) {
+        for (ChapterImages c : DOWNLOADING_IMAGES) {
             if (c.getChapterId().equals(chapterId))
                 return true;
         }
@@ -84,7 +93,7 @@ public class DownloadManager {
     }
 
     public synchronized boolean isFileEntryDownloading(FileEntry f) {
-        for (ChapterImages c : downloadingQueue()) {
+        for (ChapterImages c : DOWNLOADING_IMAGES) {
             if (c.getChapterId().equals(f.getChapterId())) {
                 for (FileEntry tmp : c.getImages()) {
                     if (tmp.getUrl().equals(f.getUrl())) {
@@ -131,7 +140,7 @@ public class DownloadManager {
         chapterImages.setComicId(chapter.BookId);
         chapterImages.setComicName(comicName);
         chapterImages.setImages(fileEntries);
-        long id = Orm.getLiteOrm().cascade().insert(chapterImages, ConflictAlgorithm.Replace);
+        long id = ChapterImagesRepository.getInstance().save(chapterImages);
         Log.i("handleDownload", "chapterImages inserted:" + id);
         downloadingQueue().addLast(chapterImages);
     }

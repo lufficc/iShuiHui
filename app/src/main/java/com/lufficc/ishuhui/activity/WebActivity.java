@@ -126,12 +126,12 @@ public class WebActivity extends BaseActivity {
                 if (chapter != null) {
                     mUrl = API.URL_IMG_CHAPTER + chapter.Id;
                     title = chapter.Title;
-                    chapterNo = chapter.ChapterNo;
+                    chapterNo = Integer.parseInt(chapter.Sort);
                     setTitle("第" + chapterNo + "章 " + title);
                     webView.loadUrl(mUrl);
                     PtrUtil.getInstance().start()
                             .put("book" + chapter.BookId, JsonUtil.getInstance().toJson(chapter))
-                            .put("book_chapter_" + chapter.BookId, chapter.ChapterNo)
+                            .put("book_chapter_" + chapter.BookId, chapter.Sort)
                             .commit();
                 } else {
                     toast("没有了");
@@ -168,7 +168,7 @@ public class WebActivity extends BaseActivity {
         Intent intent = new Intent(context, WebActivity.class);
         intent.putExtra(WebActivity.URL, AppUtils.getChapterUrl(chapter.Id));
         intent.putExtra(WebActivity.TITLE, chapter.Title);
-        intent.putExtra(WebActivity.CHAPTER_NUM, chapter.ChapterNo);
+        intent.putExtra(WebActivity.CHAPTER_NUM, Integer.valueOf(chapter.Sort));
         context.startActivity(intent);
     }
 

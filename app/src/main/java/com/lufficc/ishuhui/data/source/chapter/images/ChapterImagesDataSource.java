@@ -15,7 +15,11 @@ public interface ChapterImagesDataSource {
         void onFailed();
     }
 
+    boolean has(String chapterId);
+
     int delete(ChapterImages chapterImages);
+
+    long save(ChapterImages chapterImages);
 
     List<ChapterImages> getChapterImagesList(String comicId);
 

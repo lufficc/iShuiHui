@@ -22,7 +22,6 @@ public class ChapterImages implements Serializable {
     private String comicName;
     private String comicId;
     private String chapterName;
-    private int chapterNo;
 
     public int getChapterNo() {
         return chapterNo;
@@ -32,6 +31,7 @@ public class ChapterImages implements Serializable {
         this.chapterNo = chapterNo;
     }
 
+    private int chapterNo;
 
 
     @Mapping(Relation.OneToMany)

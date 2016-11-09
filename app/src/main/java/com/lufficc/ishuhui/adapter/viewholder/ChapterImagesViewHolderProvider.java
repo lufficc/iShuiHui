@@ -59,7 +59,7 @@ public class ChapterImagesViewHolderProvider extends ViewHolderProvider<ChapterI
         viewHolder.onBindData(chapter, position);
     }
 
-    private static int oddColor = Color.parseColor("#50000000");
+    private static int oddColor = Color.parseColor("#70000000");
     private static int evenColor = Color.parseColor("#60000000");
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -105,12 +105,12 @@ public class ChapterImagesViewHolderProvider extends ViewHolderProvider<ChapterI
             final List<FileEntry> fileEntries = data.getImages();
             if (fileEntries != null && !fileEntries.isEmpty()) {
                 Glide.with(itemView.getContext()).load(fileEntries.get(0).getLocalPath())
-                        .placeholder(R.color.black).error(R.color.black)
+                        .placeholder(R.color.black_tran).error(R.color.black_tran)
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
                                 Glide.with(itemView.getContext()).load(fileEntries.get(0).getUrl())
-                                        .placeholder(R.color.black).error(R.color.black).into(iv_image);
+                                        .placeholder(R.color.black_tran).error(R.color.black_tran).into(iv_image);
                                 return false;
                             }
 

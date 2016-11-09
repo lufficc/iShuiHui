@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.lufficc.ishuhui.R;
 import com.lufficc.ishuhui.activity.WebActivity;
 import com.lufficc.ishuhui.adapter.ChapterListAdapter;
+import com.lufficc.ishuhui.data.source.chapter.images.ChapterImagesRepository;
 import com.lufficc.ishuhui.manager.ChapterListManager;
 import com.lufficc.ishuhui.model.Chapter;
 import com.lufficc.ishuhui.model.Comic;
@@ -90,7 +91,7 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
 
     @Override
     public void onFileDownloaded(FileEntry fileEntry) {
-        Toast.makeText(context, "第" + fileEntry.getTitle() + "张下载完成", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
@@ -126,7 +127,7 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
         @SuppressLint("SetTextI18n")
         void onBindData(final Chapter data, final int position) {
             chapter_name.setText(data.Title);
-            chapter_number.setText(data.Sort + "话");
+            chapter_number.setText(data.ChapterNo + "话");
             chapter_date.setText(data.RefreshTimeStr);
             Glide.with(itemView.getContext())
                     .load(data.FrontCover)
@@ -140,24 +141,27 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
                     return true;
                 }
             });
-
-            if (DownloadManager.getInstance().isChapterDownloading(data.Id)) {
-                downLoad.setClickable(false);
-                downLoad.setOnClickListener(null);
-                downLoad.setText("下载中...");
-                progressBar.setVisibility(View.VISIBLE);
+            if (ChapterImagesRepository.getInstance().has(data.Id)) {
+                downLoad.setText("已下载");
+                downLoad.setEnabled(false);
             } else {
-                downLoad.setClickable(true);
                 downLoad.setText("下载");
-                progressBar.setVisibility(View.GONE);
-                downLoad.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        download(data);
-                    }
-                });
+                downLoad.setEnabled(true);
+                if (DownloadManager.getInstance().isChapterDownloading(data.Id)) {
+                    downLoad.setVisibility(View.GONE);
+                    downLoad.setOnClickListener(null);
+                    progressBar.setVisibility(View.VISIBLE);
+                } else {
+                    downLoad.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                    downLoad.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            download(data);
+                        }
+                    });
+                }
             }
-
         }
 
         private void buildDialog(final Chapter chapter) {
@@ -174,7 +178,7 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
                                     ChapterListManager.instance().setChapters(adapter.getData(), getAdapterPosition());
                                     PtrUtil.getInstance().start()
                                             .put("book" + chapter.BookId, JsonUtil.getInstance().toJson(chapter))
-                                            .put("book_chapter_" + chapter.BookId, chapter.ChapterNo)
+                                            .put("book_chapter_" + chapter.BookId, chapter.Sort)
                                             .commit();
                                     WebActivity.showWebView(context, chapter);
                                     break;

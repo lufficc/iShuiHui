@@ -77,7 +77,7 @@ public class SubscribeFragment extends BaseFragment implements IView<List<Comic>
     @Override
     public void onResume() {
         super.onResume();
-        getData();
+        onRefresh();
     }
 
     private boolean checkLogin() {

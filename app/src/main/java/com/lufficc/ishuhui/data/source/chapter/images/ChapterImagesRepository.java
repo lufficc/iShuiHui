@@ -4,13 +4,16 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.litesuits.orm.db.assit.QueryBuilder;
+import com.litesuits.orm.db.model.ConflictAlgorithm;
 import com.lufficc.ishuhui.manager.Orm;
 import com.lufficc.ishuhui.model.ChapterImages;
 import com.lufficc.ishuhui.model.FileEntry;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,6 +24,7 @@ import java.util.concurrent.Executors;
 public class ChapterImagesRepository implements ChapterImagesDataSource {
     private static ChapterImagesRepository INSTANCE;
     private Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Map<String, Boolean> downloadedMap = new HashMap<>();
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
     private ChapterImagesRepository() {
@@ -39,13 +43,45 @@ public class ChapterImagesRepository implements ChapterImagesDataSource {
 
 
     @Override
+    public boolean has(String chapterId) {
+        boolean downloaded;
+        synchronized (this) {
+            if (downloadedMap.containsKey(chapterId)) {
+                downloaded = downloadedMap.get(chapterId);
+            } else {
+                downloaded = Orm.getLiteOrm().queryCount(new QueryBuilder<>(ChapterImages.class).where("chapterId = ? ", chapterId)) > 0;
+                downloadedMap.put(chapterId, downloaded);
+            }
+        }
+        return downloaded;
+    }
+
+    @Override
     public int delete(ChapterImages chapterImages) {
+        synchronized (this) {
+            if (downloadedMap.containsKey(chapterImages.getChapterId())) {
+                downloadedMap.put(chapterImages.getChapterId(), false);
+            }
+        }
         return Orm.getLiteOrm().delete(chapterImages);
     }
 
     @Override
+    public long save(ChapterImages chapterImages) {
+        if (chapterImages == null)
+            return 0;
+        long id = Orm.getLiteOrm().cascade().insert(chapterImages, ConflictAlgorithm.Replace);
+        if (id > 0) {
+            synchronized (this) {
+                downloadedMap.put(chapterImages.getChapterId(), true);
+            }
+        }
+        return id;
+    }
+
+    @Override
     public List<ChapterImages> getChapterImagesList(String comicId) {
-        List<ChapterImages> chapterImagesList = Orm.getLiteOrm().cascade().query(new QueryBuilder<>(ChapterImages.class).where("comicId = ?", comicId).appendOrderDescBy("chapterNo"));
+        List<ChapterImages> chapterImagesList = Orm.getLiteOrm().cascade().query(new QueryBuilder<>(ChapterImages.class).where("comicId = ?", comicId).appendOrderDescBy("sort"));
         if (chapterImagesList != null) {
             for (ChapterImages chapterImages : chapterImagesList) {
                 sort(chapterImages);
@@ -55,6 +91,7 @@ public class ChapterImagesRepository implements ChapterImagesDataSource {
     }
 
     private void sort(ChapterImages chapterImages) {
+        if (chapterImages.getImages() == null) return;
         Collections.sort(chapterImages.getImages(), new Comparator<FileEntry>() {
             @Override
             public int compare(FileEntry o1, FileEntry o2) {
@@ -85,7 +122,7 @@ public class ChapterImagesRepository implements ChapterImagesDataSource {
 
     @Override
     public List<ChapterImages> getChapterImagesList() {
-        List<ChapterImages> chapterImagesList = Orm.getLiteOrm().cascade().query(new QueryBuilder<>(ChapterImages.class).appendOrderDescBy("comicName").appendOrderDescBy("chapterNo"));
+        List<ChapterImages> chapterImagesList = Orm.getLiteOrm().cascade().query(new QueryBuilder<>(ChapterImages.class).appendOrderDescBy("comicName").appendOrderDescBy("sort"));
         if (chapterImagesList != null) {
             for (ChapterImages chapterImages : chapterImagesList) {
                 sort(chapterImages);

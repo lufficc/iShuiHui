@@ -20,8 +20,17 @@ public class AppUtils {
         return PtrUtil.getInstance().getBoolean("chapter_" + chapterId + "_is_downloaded", false);
     }
 
+    private static ExecutorService executorService;
+
     public static ExecutorService getExecutorService() {
-        return Executors.newCachedThreadPool();
+        if(executorService == null){
+            synchronized (AppUtils.class){
+                if(executorService == null){
+                    executorService = Executors.newCachedThreadPool();
+                }
+            }
+        }
+        return executorService;
     }
 
 
