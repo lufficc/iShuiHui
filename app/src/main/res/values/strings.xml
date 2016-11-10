@@ -48,5 +48,7 @@
     <string name="welcome">Enjoy your reading from here.</string>
     <string name="download_manager">下载管理</string>
     <string name="download">下载</string>
+    <string name="input_danmu">请输入弹幕</string>
+    <string name="send">发送</string>
 
 </resources>

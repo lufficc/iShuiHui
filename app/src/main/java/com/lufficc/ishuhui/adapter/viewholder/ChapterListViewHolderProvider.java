@@ -23,7 +23,6 @@ import com.lufficc.ishuhui.data.source.chapter.images.ChapterImagesRepository;
 import com.lufficc.ishuhui.manager.ChapterListManager;
 import com.lufficc.ishuhui.model.Chapter;
 import com.lufficc.ishuhui.model.Comic;
-import com.lufficc.ishuhui.model.FileEntry;
 import com.lufficc.ishuhui.service.DownloadManager;
 import com.lufficc.ishuhui.service.DownloadService;
 import com.lufficc.ishuhui.utils.JsonUtil;
@@ -37,8 +36,7 @@ import butterknife.ButterKnife;
  * Created by lufficc on 2016/9/5.
  */
 
-public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, ChapterListViewHolderProvider.ViewHolder>
-        implements DownloadManager.DownLoadListener {
+public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, ChapterListViewHolderProvider.ViewHolder> {
 
     private ChapterListAdapter adapter;
     private Context context;
@@ -60,44 +58,6 @@ public class ChapterListViewHolderProvider extends ViewHolderProvider<Chapter, C
         viewHolder.onBindData(chapter, position);
     }
 
-    @Override
-    public void onDownloadStart(String comicId, String chapterId) {
-        int i = chapterId2Index(comicId, chapterId);
-        if (i != -1) {
-            adapter.updateData(i);
-        }
-    }
-
-    @Override
-    public void onChapterDownloaded(String comicId, String chapterId) {
-        int i = chapterId2Index(comicId, chapterId);
-        if (i != -1) {
-            adapter.updateData(i);
-        }
-    }
-
-    private int chapterId2Index(String comicId, String chapterId) {
-        if (Integer.valueOf(comicId) != comic.Id) {
-            return -1;
-        }
-        for (int i = 0; i < adapter.getData().size(); i++) {
-            Chapter chapter = (Chapter) adapter.getData().get(i);
-            if (chapter.Id.equals(chapterId)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    @Override
-    public void onFileDownloaded(FileEntry fileEntry) {
-
-    }
-
-    @Override
-    public void onException(FileEntry fileEntry, Exception e) {
-
-    }
 
     class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.chapter_icon)

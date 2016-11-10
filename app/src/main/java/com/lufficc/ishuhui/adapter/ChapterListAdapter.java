@@ -13,6 +13,7 @@ import com.lufficc.ishuhui.data.source.file.FilesRepository;
 import com.lufficc.ishuhui.model.Chapter;
 import com.lufficc.ishuhui.model.Comic;
 import com.lufficc.ishuhui.model.FileEntry;
+import com.lufficc.ishuhui.service.DownloadManager;
 import com.lufficc.ishuhui.utils.AppUtils;
 import com.lufficc.lightadapter.LightAdapter;
 import com.lufficc.lightadapter.LoadMoreFooterModel;
@@ -24,7 +25,7 @@ import java.util.List;
 /**
  * Created by lcc_luffy on 2016/1/23.
  */
-public class ChapterListAdapter extends LightAdapter implements FilesDataSource.LoadFilesCallback {
+public class ChapterListAdapter extends LightAdapter implements FilesDataSource.LoadFilesCallback,DownloadManager.DownLoadListener {
     @Nullable
     private Comic comic;
     private Context context;
@@ -36,17 +37,11 @@ public class ChapterListAdapter extends LightAdapter implements FilesDataSource.
     }
 
     private LoadMoreFooterModel loadMoreFooterModel;
-    private ChapterListViewHolderProvider chapterListViewHolderProvider;
-    public ChapterListViewHolderProvider getChapterListViewHolderProvider() {
-        return chapterListViewHolderProvider;
-    }
-
-
 
     public ChapterListAdapter(final Context context, final @Nullable Comic comic) {
         this.context = context;
         this.comic = comic;
-        register(Chapter.class, chapterListViewHolderProvider = new ChapterListViewHolderProvider(context, this, comic));
+        register(Chapter.class, new ChapterListViewHolderProvider(context, this, comic));
         register(HeaderViewProvider.Header.class, new HeaderViewProvider());
         register(LoadMoreFooterModel.class, new LoadMoreFooterViewHolderProvider());
         addFooter(loadMoreFooterModel = new LoadMoreFooterModel());
@@ -99,5 +94,47 @@ public class ChapterListAdapter extends LightAdapter implements FilesDataSource.
             progressDialog.dismiss();
         }
         Toast.makeText(context, "加载失败，请检查网络", Toast.LENGTH_SHORT).show();
+    }
+
+
+    private int chapterId2Index(String comicId, String chapterId) {
+        if (Integer.valueOf(comicId) != comic.Id) {
+            return -1;
+        }
+        for (int i = 0; i < getData().size(); i++) {
+            Chapter chapter = (Chapter) getData().get(i);
+            if (chapter.Id.equals(chapterId)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public void onDownloadStart(String comicId, String chapterId) {
+        int i = chapterId2Index(comicId, chapterId);
+        if (i != -1) {
+            updateData(i);
+        }
+    }
+
+    @Override
+    public void onChapterDownloaded(String comicId, String chapterId) {
+        int i = chapterId2Index(comicId, chapterId);
+        if (i != -1) {
+            updateData(i);
+        }
+    }
+
+
+
+    @Override
+    public void onFileDownloaded(FileEntry fileEntry) {
+
+    }
+
+    @Override
+    public void onException(FileEntry fileEntry, Exception e) {
+
     }
 }

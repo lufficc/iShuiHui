@@ -194,21 +194,21 @@ public class ChapterListFragment extends BaseFragment implements SwipeRefreshLay
 
     @Override
     public void onDownloadStart(String comicId, String chapterId) {
-        adapter.getChapterListViewHolderProvider().onDownloadStart(comicId, chapterId);
+        adapter.onDownloadStart(comicId, chapterId);
     }
 
     @Override
     public void onChapterDownloaded(String comicId, String chapterId) {
-        adapter.getChapterListViewHolderProvider().onChapterDownloaded(comicId, chapterId);
+        adapter.onChapterDownloaded(comicId, chapterId);
     }
 
     @Override
     public void onFileDownloaded(FileEntry onException) {
-        adapter.getChapterListViewHolderProvider().onFileDownloaded(onException);
+        adapter.onFileDownloaded(onException);
     }
 
     @Override
     public void onException(FileEntry fileEntry, Exception e) {
-        adapter.getChapterListViewHolderProvider().onException(fileEntry, e);
+        adapter.onException(fileEntry, e);
     }
 }
